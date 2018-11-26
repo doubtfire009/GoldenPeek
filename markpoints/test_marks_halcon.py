@@ -11,10 +11,10 @@ def vertexFinder(xList,yList):
         x_yMax = [xList[yList.index(yMaxIndex)], yMaxIndex]
         x_yMin = [xList[yList.index(yMinIndex)], yMinIndex]
     else:
-        xMax_y = [xMaxIndex, yList[xList.index(xMaxIndex)]]
-        xMin_y = [xMinIndex, yList[xList.index(xMinIndex)]]
-        x_yMax = [xList[yList.index(yMaxIndex)], yMaxIndex]
-        x_yMin = [xList[yList.index(yMinIndex)], yMinIndex]
+        xMax_y = [xMaxIndex, yMaxIndex]
+        xMin_y = [xMinIndex, yMinIndex]
+        x_yMax = [xMinIndex, yMaxIndex]
+        x_yMin = [xMaxIndex, yMinIndex]
     # xMax_y = (xMaxIndex,yList[xList.index(xMaxIndex)])
     # xMin_y = (xMinIndex,yList[xList.index(xMinIndex)])
     # x_yMax = (xList[yList.index(yMaxIndex)],yMaxIndex)
