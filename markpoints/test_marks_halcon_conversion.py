@@ -62,7 +62,7 @@ marksHalconReverseConverter(A1,A2,B1,B2)
 test = np.matrix([
     [1,0,0],
     [0,1,0],
-    [0,0,0]
+    [0,0,8]
 ])
 
 print(test.I)
