@@ -48,13 +48,12 @@ class GoldenPeek:
         self.tabFinder = ttk.Frame(self.tabControl)  # Add a second tab for Finder
         self.tabControl.add(self.tabFinder, text='检测')
 
-
         self.tabControl.grid(row=1, column=0)  # Grid to make visible
-        # self.tabControl.pack(expand=1, fill="both")   # Grid to make visible
 
         self.tabHalconShow()
 
         self.tabFinderShow()
+
 
 
         # After it is called once, the update method will be automatically called every delay milliseconds
@@ -65,8 +64,6 @@ class GoldenPeek:
         self.window.mainloop()
 
     def tabHalconShow(self):
-
-
 
         # HalconA
         self.labelHalconA = ttk.LabelFrame(self.tabHalcon, text=' 标定A点坐标 ')
@@ -175,32 +172,75 @@ class GoldenPeek:
 
     def tabFinderShow(self):
 
+        # 手动部分
         # Start Button
-        self.labelFinderButton = ttk.LabelFrame(self.tabFinder, text=' 按钮部分 ')
+        self.labelFinderButton = ttk.LabelFrame(self.tabFinder, text=' 手动操作 ')
         self.labelFinderButton.grid(row=0, column=0, padx=8, pady=4)
 
         # Adding Start Button
-        self.catcherButton = ttk.Button(self.labelFinderButton, text="开始抓取", command=self.processorCatcher)
+        self.catcherButton = ttk.Button(self.labelFinderButton, text="截取图像", command=self.processorCatcher)
         self.catcherButton.grid(row=1, column=0)
 
         # Adding Process Button
-        self.processorButton = ttk.Button(self.labelFinderButton, text="进行处理", command=self.processorImage)
-        self.processorButton.grid(row=2, column=0)
+        self.processorButton = ttk.Button(self.labelFinderButton, text="检测目标", command=self.processorImage)
+        self.processorButton.grid(row=1, column=1)
 
-        # Show Info
-        self.labelFinderInfo = ttk.LabelFrame(self.tabFinder, text=' 显示信息 ')
-        self.labelFinderInfo.grid(row=0, column=1, padx=8, pady=4)
+        # Adding Process Button
+        self.transferButton = ttk.Button(self.labelFinderButton, text="发送坐标", command=self.processorTransfer)
+        self.transferButton.grid(row=1, column=2)
 
-        self.labelInfo = ttk.Label(self.labelFinderInfo, text="信息")
-        self.labelInfo.grid(row=1, column=0, sticky='W')
+        # Adding Process Button
+        self.fetchSignalButton = ttk.Button(self.labelFinderButton, text="获取标志位", command=self.processorFetchSignal)
+        self.fetchSignalButton.grid(row=1, column=3)
+
+        # 自动部分
+        # Start Button
+        self.labelAutoFinderButton = ttk.LabelFrame(self.tabFinder, text=' 自动操作 ')
+        self.labelAutoFinderButton.grid(row=0, column=1, padx=8, pady=4)
+
+        # Adding Start Button
+        self.launchButton = ttk.Button(self.labelAutoFinderButton, text="开始", command=self.processorCatcher)
+        self.launchButton.grid(row=1, column=0)
+
+        # Adding Start Button
+        self.ceaseButton = ttk.Button(self.labelAutoFinderButton, text="停止", command=self.processorCatcher)
+        self.ceaseButton.grid(row=1, column=1)
+
 
         # Finder Threshold
-        self.labelFinderThreshold = ttk.LabelFrame(self.tabFinder, text=' 阈值设定 ')
-        self.labelFinderThreshold.grid(row=0, column=2, padx=8, pady=4)
+        self.labelfinderCalThresholdLow = ttk.LabelFrame(self.tabFinder, text=' 像素阈值(低)设定 ')
+        self.labelfinderCalThresholdLow.grid(row=1, column=0)
         # Adding HalconCal Scale Threshold
-        self.finderCalThreshold = tkinter.Scale(self.labelFinderThreshold, from_=0, to=255, orient='horizontal',
-                                                showvalue=1)
-        self.finderCalThreshold.grid(row=1, column=0)
+        self.finderCalThresholdLow = tkinter.Scale(self.labelfinderCalThresholdLow, from_=0, to=255, orient='horizontal',
+                                                showvalue=1, command=lambda : self.thresholdSetter('cal','finder','low'))
+        self.finderCalThresholdLow.grid(row=1, column=0)
+
+        # Finder Threshold
+        self.labelfinderCalThresholdHigh = ttk.LabelFrame(self.tabFinder, text=' 像素阈值(高)设定 ')
+        self.labelfinderCalThresholdHigh.grid(row=1, column=1)
+        # Adding HalconCal Scale Threshold
+        self.finderCalThresholdHigh = tkinter.Scale(self.labelfinderCalThresholdHigh, from_=0, to=255, orient='horizontal',
+                                                   showvalue=1, command=lambda: self.thresholdSetter('cal','finder', 'high'))
+        self.finderCalThresholdHigh.grid(row=1, column=0)
+
+        # Finder Threshold
+        self.labelfinderAreaThresholdLow = ttk.LabelFrame(self.tabFinder, text=' 面积阈值(低)设定 ')
+        self.labelfinderAreaThresholdLow.grid(row=1, column=2)
+        # Adding HalconCal Scale Threshold
+        self.finderAreaThresholdLow = tkinter.Scale(self.labelfinderAreaThresholdLow, from_=0, to=255, orient='horizontal',
+                                                   showvalue=1, command=lambda: self.thresholdSetter('area','finder', 'low'))
+        self.finderAreaThresholdLow.grid(row=1, column=0)
+
+        # Finder Threshold
+        self.labelfinderAreaThresholdHigh = ttk.LabelFrame(self.tabFinder, text=' 面积阈值(低)设定 ')
+        self.labelfinderAreaThresholdHigh.grid(row=1, column=3)
+        # Adding HalconCal Scale Threshold
+        self.finderAreaThresholdHigh = tkinter.Scale(self.labelfinderAreaThresholdHigh, from_=0, to=255, orient='horizontal',
+                                                    showvalue=1,
+                                                    command=lambda: self.thresholdSetter('area','finder', 'low'))
+        self.finderAreaThresholdHigh.grid(row=1, column=0)
+
+
 
     def update(self):
         # Get a frame from the video source
@@ -295,6 +335,16 @@ class GoldenPeek:
 
     def processorImage(self):
         print("processor")
+
+    def processorTransfer(self):
+        print("processor")
+
+    def processorFetchSignal(self):
+        print("processor")
+
+    def thresholdSetter(self,type = settings.thresholdTypeCal,source = settings.thresholdSourceHalcon,
+                        level = settings.thresholdLow):
+        pass
 
 
 

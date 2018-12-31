@@ -20,7 +20,8 @@ class App:
         self.canvas.grid(row=0, column=0, columnspan=1, rowspan=1, padx=5, pady=5, sticky='s')
         # Button that lets the user take a snapshot
         self.btn_snapshot=tkinter.Button(window, text="Snapshot", width=50, command=self.snapshot)
-        self.btn_snapshot.grid(row=1, column=0, columnspan=1, rowspan=1, padx=5, pady=5, sticky='s')
+        self.btn_snapshot.grid(row=10, column=3, columnspan=1, rowspan=1, padx=5, pady=5, sticky='s')
+
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
         #keep obtaining the img on the canvas
@@ -43,13 +44,13 @@ class App:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
 
-        if settings.click_frame == 0:
-            self.obtained = PIL.ImageTk.PhotoImage(image = PIL.Image.open('./mountain.jpg'))
-        else:
-            self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open(settings.catch_img_dir+"catched.jpg"))
-        self.show_catched = self.canvas.create_image(0, 0, image=self.obtained,anchor = tkinter.NW)
-
-        self.canvas.move(self.show_catched, 800, 0)
+        # if settings.click_frame == 0:
+        #     self.obtained = PIL.ImageTk.PhotoImage(image = PIL.Image.open('./mountain.jpg'))
+        # else:
+        #     self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open(settings.catch_img_dir+"catched.jpg"))
+        # self.show_catched = self.canvas.create_image(0, 0, image=self.obtained,anchor = tkinter.NW)
+        #
+        # self.canvas.move(self.show_catched, 800, 0)
 
         self.window.after(self.delay, self.update)
 
@@ -67,12 +68,14 @@ class MyVideoCapture:
 
     def get_frame(self,default=0):
         if self.vid.isOpened():
-            # if default:
-            #     self.vid.set(cv2.CAP_PROP_FRAME_WIDTH,2688)
-            #     self.vid.set(cv2.CAP_PROP_FRAME_HEIGHT,1520)
-            # else:
-            #     self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-            #     self.vid.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+            if default:
+
+                self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, 2688)
+                self.vid.set(cv2.CAP_PROP_FRAME_HEIGHT, 1520)
+            else:
+                self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+                self.vid.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
 
             ret, frame = self.vid.read()
             if ret:

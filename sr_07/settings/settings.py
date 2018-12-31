@@ -59,3 +59,9 @@ halcon_A = [0,0]
 halcon_B = [0,0]
 halcon_C = [0,0]
 halcon_D = [0,0]
+
+#threshold types
+
+thresholdType = ['cal','area']
+thresholdSource = ['halcon','finder']
+thresholdLevel = ['low','high']
