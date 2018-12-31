@@ -1,4 +1,4 @@
-from crc import crc16
+from modbusGP.crc import crc16
 
 def int16_to_char(int16):
 	return [int16>>8, int16&0xff]

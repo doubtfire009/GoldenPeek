@@ -3,7 +3,7 @@ import serial
 import serial.tools.list_ports
 import settings.settings as settings
 
-from modbus import ModbusCmd, char_to_int16
+from modbusGP.modbus import ModbusCmd, char_to_int16
 
 
 

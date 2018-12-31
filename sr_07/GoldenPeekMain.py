@@ -28,8 +28,7 @@ class GoldenPeek:
         self.frameCanvas = tkinter.Frame(window)
 
         # Create a canvas that can fit the above video source size
-        # self.canvas = tkinter.Canvas(window, width=(frameInit.shape)[0]+(frameInit.shape)[1], height=(frameInit.shape)[1])
-        # self.canvas.grid(row=0, column=0, columnspan=1, rowspan=1, padx=2, pady=2, sticky='s')
+
         settings.canvasWidth = (frameInit.shape)[1];
         settings.canvasHeight = (frameInit.shape)[0];
 
