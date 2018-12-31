@@ -3,12 +3,13 @@ from tkinter import ttk  # 导入ttk模块，因为下拉菜单控件在ttk中
 from tkinter import messagebox  # 导入提示窗口包
 import cv2
 import PIL.Image, PIL.ImageTk
+from functools import partial
 
 import settings.settings as settings
 import image_catcher.img_catcher as i_c
 import halcon_cal.halcon_cal as hal_c
 import image_processor.img_processor as i_p
-import modbusGP as mdbsGp
+import modbusGP.modbusGP as mdbsGp
 
 class GoldenPeek:
     def __init__(self, window, window_title, video_source=0):
@@ -212,7 +213,7 @@ class GoldenPeek:
         self.labelfinderCalThresholdLow.grid(row=1, column=0)
         # Adding HalconCal Scale Threshold
         self.finderCalThresholdLow = tkinter.Scale(self.labelfinderCalThresholdLow, from_=0, to=255, orient='horizontal',
-                                                showvalue=1, command=lambda : self.thresholdSetter('cal','finder','low'))
+                                                showvalue=1, command=partial(self.thresholdSetter,'finder','cal','low'))
         self.finderCalThresholdLow.grid(row=1, column=0)
 
         # Finder Threshold
@@ -220,26 +221,25 @@ class GoldenPeek:
         self.labelfinderCalThresholdHigh.grid(row=1, column=1)
         # Adding HalconCal Scale Threshold
         self.finderCalThresholdHigh = tkinter.Scale(self.labelfinderCalThresholdHigh, from_=0, to=255, orient='horizontal',
-                                                   showvalue=1, command=lambda: self.thresholdSetter('cal','finder', 'high'))
+                                                   showvalue=1, command=partial(self.thresholdSetter,'finder', 'cal','high'))
         self.finderCalThresholdHigh.grid(row=1, column=0)
 
         # Finder Threshold
         self.labelfinderAreaThresholdLow = ttk.LabelFrame(self.tabFinder, text=' 面积阈值(低)设定 ')
         self.labelfinderAreaThresholdLow.grid(row=1, column=2)
         # Adding HalconCal Scale Threshold
-        self.finderAreaThresholdLow = tkinter.Scale(self.labelfinderAreaThresholdLow, from_=0, to=255, orient='horizontal',
-                                                   showvalue=1, command=lambda: self.thresholdSetter('area','finder', 'low'))
+        self.finderAreaThresholdLow = tkinter.Scale(self.labelfinderAreaThresholdLow, from_=0, to=1000, orient='horizontal',
+                                                   showvalue=1, command=partial(self.thresholdSetter,'finder', 'area','low'))
         self.finderAreaThresholdLow.grid(row=1, column=0)
 
         # Finder Threshold
-        self.labelfinderAreaThresholdHigh = ttk.LabelFrame(self.tabFinder, text=' 面积阈值(低)设定 ')
+        self.labelfinderAreaThresholdHigh = ttk.LabelFrame(self.tabFinder, text=' 面积阈值(高)设定 ')
         self.labelfinderAreaThresholdHigh.grid(row=1, column=3)
         # Adding HalconCal Scale Threshold
-        self.finderAreaThresholdHigh = tkinter.Scale(self.labelfinderAreaThresholdHigh, from_=0, to=255, orient='horizontal',
+        self.finderAreaThresholdHigh = tkinter.Scale(self.labelfinderAreaThresholdHigh, from_=0, to=1000, orient='horizontal',
                                                     showvalue=1,
-                                                    command=lambda: self.thresholdSetter('area','finder', 'low'))
+                                                    command=partial(self.thresholdSetter,'finder', 'area','high'))
         self.finderAreaThresholdHigh.grid(row=1, column=0)
-
 
 
     def update(self):
@@ -260,7 +260,7 @@ class GoldenPeek:
             self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open(settings.halcon_img_dir + "halcon.jpg").resize(
                 (settings.canvasWidth, settings.canvasHeight), resample=PIL.Image.LANCZOS))
         if settings.displayerFlag == settings.PROCESSED:
-            self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open(settings.processed + "processed.jpg").resize(
+            self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open(settings.process_img_dir + "processed.jpg").resize(
                 (settings.canvasWidth, settings.canvasHeight), resample=PIL.Image.LANCZOS))
 
 
@@ -330,8 +330,16 @@ class GoldenPeek:
         self.snapshot(settings.CATCHED)
 
     def processorImage(self):
-        i_p.img_processor(settings.processType)
-        settings.displayerFlag = settings.PROCESSED
+        thresholdCal = settings.thresholdInfo['finder']['cal']
+        thresholdArea = settings.thresholdInfo['finder']['area']
+        print("threshold")
+        print(thresholdCal)
+        print(thresholdArea)
+        if int(thresholdCal['low'])>int(thresholdCal['high']) or int(thresholdArea['low'])>int(thresholdArea['high']):
+            messagebox.showinfo(title='阈值参数', message="阈值上下限设置有误")
+        else:
+            i_p.img_processor(settings.processType)
+            settings.displayerFlag = settings.PROCESSED
 
     def processorTransfer(self):
         ret = mdbsGp.modbusListTransferrer(settings.finderProcessResult)
@@ -345,11 +353,13 @@ class GoldenPeek:
 
     def processorFetchSignal(self):
         watchDog = mdbsGp.recvWatchDog()
-        
+        if watchDog == settings.watchDog:
+            messagebox.showinfo(title='Modbus传输', message="机械臂已读取完成")
 
-    def thresholdSetter(self,value,type = settings.thresholdTypeCal,source = settings.thresholdSourceHalcon,
-                        level = settings.thresholdLow):
-        settings.thresholdType[source][type][level] = value
+    def thresholdSetter(self,source = settings.thresholdSource[0],type = settings.thresholdType[0],
+                        level = settings.thresholdLevel[0],value=0):
+
+        settings.thresholdInfo[source][type][level] = value
 
 
 

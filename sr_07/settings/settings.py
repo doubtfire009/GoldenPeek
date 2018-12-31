@@ -35,8 +35,8 @@ halA = 0
 halB = 0
 
 halconConverterMatrix = np.matrix([
-    [0,0],
-    [0,0]
+    [2,1],
+    [0,3]
 ])
 
 #Processor Flags
@@ -46,7 +46,6 @@ processModbusFlag = 0
 processThreshold = 0
 
 
-catch_dest = 'images_storage/catched/'
 catch_img_dir = './images_storage/catched/'
 halcon_img_dir = './images_storage/halcon/'
 process_img_dir = './images_storage/processed/'
@@ -60,7 +59,7 @@ halcon_D = [0,0]
 
 #threshold types
 
-thresholdType = {'cal':0,'area':0}
+thresholdType = ['cal','area']
 thresholdSource = ['halcon','finder']
 thresholdLevel = ['low','high']
 
@@ -109,3 +108,5 @@ modbusTransferXYIntval = 10
 modbusTransferIntval = 50
 modbusTransferAddress = 0x01
 modbusTransferRegStart = 500
+
+modbusWatchDog = 7788

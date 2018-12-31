@@ -128,12 +128,3 @@ def marksHalconReverseConverter(halconP1 = (0,0),halconP2 = (0,0),robotP1 = (0,0
 
     settings.halconConverterMatrix = MatrixHalcon
 
-
-
-
-
-
-
-
-def modbusTransferrer():
-    print("modbusTransferrer")
