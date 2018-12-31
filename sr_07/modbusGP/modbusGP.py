@@ -2,6 +2,7 @@
 import serial
 import serial.tools.list_ports
 import settings.settings as settings
+import time
 
 from modbusGP.modbus import ModbusCmd, char_to_int16
 
@@ -41,5 +42,5 @@ def recvWatchDog():
             continue
         else:
             break
-        sleep(0.5)
+        time.sleep(1)
     return watchDog

@@ -102,6 +102,7 @@ thresholdInfo = {
 
 processType = 'default'
 
+
 finderProcessResult = []
 
 modbusTransferXYIntval = 10
@@ -109,4 +110,7 @@ modbusTransferIntval = 50
 modbusTransferAddress = 0x01
 modbusTransferRegStart = 500
 
+
 modbusWatchDog = 7788
+
+autoCease = 0

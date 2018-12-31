@@ -2,6 +2,7 @@ import tkinter
 from tkinter import ttk  # 导入ttk模块，因为下拉菜单控件在ttk中
 from tkinter import messagebox  # 导入提示窗口包
 import cv2
+import time
 import PIL.Image, PIL.ImageTk
 from functools import partial
 
@@ -199,11 +200,11 @@ class GoldenPeek:
         self.labelAutoFinderButton.grid(row=0, column=1, padx=8, pady=4)
 
         # Adding Start Button
-        self.launchButton = ttk.Button(self.labelAutoFinderButton, text="开始", command=self.processorCatcher)
+        self.launchButton = ttk.Button(self.labelAutoFinderButton, text="开始", command=self.autoLaunch)
         self.launchButton.grid(row=1, column=0)
 
-        # Adding Start Button
-        self.ceaseButton = ttk.Button(self.labelAutoFinderButton, text="停止", command=self.processorCatcher)
+        # Adding Cease Button
+        self.ceaseButton = ttk.Button(self.labelAutoFinderButton, text="停止", command=self.autoCease)
         self.ceaseButton.grid(row=1, column=1)
 
 
@@ -354,6 +355,9 @@ class GoldenPeek:
         watchDog = mdbsGp.recvWatchDog()
         if watchDog == settings.watchDog:
             messagebox.showinfo(title='Modbus传输', message="机械臂已读取完成")
+            return True
+        else:
+            return False
 
     def thresholdSetter(self,source = settings.thresholdSource[0],type = settings.thresholdType[0],
                         level = settings.thresholdLevel[0],value=0):
@@ -361,6 +365,32 @@ class GoldenPeek:
         settings.thresholdInfo[source][type][level] = value
 
 
+
+    def autoLaunch(self):
+        while True:
+            self.processorCatcher()
+            print("k1")
+            print(settings.displayerFlag)
+            time.sleep(10)
+            self.processorImage()
+            totalTime = settings.finderProcessResult[0][0]
+            print("k2")
+            print(settings.displayerFlag)
+            time.sleep(10)
+            self.processorTransfer()
+
+            if settings.autoCease :
+                break
+            else:
+                continue
+        settings.autoCease = 0
+
+    def autoCease(self):
+        self.autoCeaseReset()
+
+    def autoCeaseReset(self):
+        settings.autoCease = 1
+        settings.displayerFlag == settings.INIT
 
 class MyVideoCapture:
     def __init__(self, video_source=0):
