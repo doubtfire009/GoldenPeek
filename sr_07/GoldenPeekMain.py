@@ -250,10 +250,6 @@ class GoldenPeek:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
 
-        # if settings.halconCatcherFlag == 0 and settings.processCatcherFlag == 0:
-        #     self.obtained = PIL.ImageTk.PhotoImage(image = PIL.Image.open('./mountain.jpg'))
-        # else:
-        #     self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open(settings.catch_img_dir+"catched.jpg").resize((settings.canvasWidth,settings.canvasHeight),resample=PIL.Image.LANCZOS))
 
         if settings.displayerFlag == settings.INIT:
             self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open('./mountain.jpg'))
@@ -331,20 +327,29 @@ class GoldenPeek:
         print(settings.halconThreshold)
 
     def processorCatcher(self):
-        self.snapshot()
+        self.snapshot(settings.CATCHED)
 
     def processorImage(self):
-        print("processor")
+        i_p.img_processor(settings.processType)
+        settings.displayerFlag = settings.PROCESSED
 
     def processorTransfer(self):
-        print("processor")
+        ret = mdbsGp.modbusListTransferrer(settings.finderProcessResult)
+        if ret == -1:
+            messagebox.showinfo(title='Modbus传输', message="尚未得到传输值")
+        elif ret==0:
+            messagebox.showinfo(title='Modbus传输', message="传输值不合法")
+        else:
+            messagebox.showinfo(title='Modbus传输', message="传输已成功")
+
 
     def processorFetchSignal(self):
-        print("processor")
+        watchDog = mdbsGp.recvWatchDog()
+        
 
-    def thresholdSetter(self,type = settings.thresholdTypeCal,source = settings.thresholdSourceHalcon,
+    def thresholdSetter(self,value,type = settings.thresholdTypeCal,source = settings.thresholdSourceHalcon,
                         level = settings.thresholdLow):
-        pass
+        settings.thresholdType[source][type][level] = value
 
 
 

@@ -51,8 +51,6 @@ catch_img_dir = './images_storage/catched/'
 halcon_img_dir = './images_storage/halcon/'
 process_img_dir = './images_storage/processed/'
 
-#threshold
-process_threshold = 0
 
 #Halcon X-Y
 halcon_A = [0,0]
@@ -62,6 +60,52 @@ halcon_D = [0,0]
 
 #threshold types
 
-thresholdType = ['cal','area']
+thresholdType = {'cal':0,'area':0}
 thresholdSource = ['halcon','finder']
 thresholdLevel = ['low','high']
+
+thresholdInfo = {
+    'halcon':
+        {'cal':
+             {
+                 'low': 0,
+                 'high':0
+             }
+         },
+    'finder':
+        {'cal':
+            {
+                'low': 0,
+                'high': 0
+            },
+
+        'area':
+            {
+                'low': 0,
+                'high': 0
+            }
+        },
+    'autoFinder':
+        {'cal':
+            {
+                'low': 0,
+                'high': 0
+            },
+
+        'area':
+            {
+                'low': 0,
+                'high': 0
+            }
+        }
+    }
+
+
+processType = 'default'
+
+finderProcessResult = []
+
+modbusTransferXYIntval = 10
+modbusTransferIntval = 50
+modbusTransferAddress = 0x01
+modbusTransferRegStart = 500
