@@ -372,12 +372,12 @@ class GoldenPeek:
             print("k1")
             print(settings.displayerFlag)
             time.sleep(10)
-            self.processorImage()
-            totalTime = settings.finderProcessResult[0][0]
-            print("k2")
-            print(settings.displayerFlag)
-            time.sleep(10)
-            self.processorTransfer()
+            # self.processorImage()
+            # totalTime = settings.finderProcessResult[0][0]
+            # print("k2")
+            # print(settings.displayerFlag)
+            # time.sleep(10)
+            # self.processorTransfer()
 
             if settings.autoCease :
                 break
