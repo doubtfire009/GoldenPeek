@@ -250,6 +250,11 @@ class GoldenPeek:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
 
+        self.autoLaunchMachineCounterSet()
+        if settings.autoCease:
+            self.autoLaunchMachine()
+        print(settings.autoCease)
+        print(settings.autoLaunchMachineCounter)
 
         if settings.displayerFlag == settings.INIT:
             self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open('./mountain.jpg'))
@@ -364,14 +369,21 @@ class GoldenPeek:
 
         settings.thresholdInfo[source][type][level] = value
 
-
-
     def autoLaunch(self):
-        while True:
-            self.processorCatcher()
-            print("k1")
-            print(settings.displayerFlag)
-            time.sleep(10)
+        settings.autoCease = 1
+
+    def autoLaunchMachineCounterSet(self):
+        if settings.autoLaunchMachineCounter > settings.autoCatchIntval:
+            settings.autoLaunchMachineCounter = 0
+        else:
+            settings.autoLaunchMachineCounter = settings.autoLaunchMachineCounter + settings.delay
+
+    def autoLaunchMachine(self):
+            if settings.autoLaunchMachineCounter == settings.autoCatchIntval:
+                self.processorCatcher()
+            # print("k1")
+            # print(settings.displayerFlag)
+            # time.sleep(10)
             # self.processorImage()
             # totalTime = settings.finderProcessResult[0][0]
             # print("k2")
@@ -379,17 +391,12 @@ class GoldenPeek:
             # time.sleep(10)
             # self.processorTransfer()
 
-            if settings.autoCease :
-                break
-            else:
-                continue
-        settings.autoCease = 0
 
     def autoCease(self):
         self.autoCeaseReset()
 
     def autoCeaseReset(self):
-        settings.autoCease = 1
+        settings.autoCease = 0
         settings.displayerFlag == settings.INIT
 
 class MyVideoCapture:

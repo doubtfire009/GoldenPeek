@@ -7,6 +7,8 @@ import numpy as np
 canvasWidth = 0
 canvasHeight = 0
 
+delay = 15
+
 #btn_catch
 showing_frame=1
 click_frame = 0
@@ -114,3 +116,5 @@ modbusTransferRegStart = 500
 modbusWatchDog = 7788
 
 autoCease = 0
+autoLaunchMachineCounter = 0
+autoCatchIntval = 1050
