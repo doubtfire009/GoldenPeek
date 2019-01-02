@@ -379,17 +379,22 @@ class GoldenPeek:
             settings.autoLaunchMachineCounter = settings.autoLaunchMachineCounter + settings.delay
 
     def autoLaunchMachine(self):
-            if settings.autoLaunchMachineCounter == settings.autoCatchIntval:
-                self.processorCatcher()
-            # print("k1")
+        if settings.autoLaunchMachineCounter == settings.autoCatchIntval:
+            self.processorCatcher()
             # print(settings.displayerFlag)
             # time.sleep(10)
-            # self.processorImage()
+            self.processorImage()
             # totalTime = settings.finderProcessResult[0][0]
-            # print("k2")
             # print(settings.displayerFlag)
             # time.sleep(10)
-            # self.processorTransfer()
+            self.processorTransfer()
+
+            fetchSignal = self.processorFetchSignal()
+            print("autoLaunchMachine_fetchSignal")
+            print(fetchSignal)
+            if fetchSignal == False:
+                settings.autoCease = 0
+
 
 
     def autoCease(self):

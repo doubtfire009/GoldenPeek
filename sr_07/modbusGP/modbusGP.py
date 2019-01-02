@@ -6,17 +6,18 @@ import time
 
 from modbusGP.modbus import ModbusCmd, char_to_int16
 
-
-
-def modbusTransferrer(address=settings.modbusTransferAddress,regStart=settings.modbusTransferRegStart,value=0):
+def portBuilder():
     portList = list(serial.tools.list_ports.comports())
     print(portList[0][0])
     port = serial.Serial(port=portList[0][0], baudrate=19200, bytesize=8, parity='E', stopbits=1)
 
     print(port.is_open)  # 检验串口是否打开
+    return port
+
+def modbusTransferrer(address=settings.modbusTransferAddress,regStart=settings.modbusTransferRegStart,value=0):
+    port = portBuilder()
 
     send = ModbusCmd().cmd03(address, regStart, value)
-
 
     port.write(send)
 
@@ -36,8 +37,9 @@ def modbusListTransferrer(resList = []):
 
 
 def recvWatchDog():
+    port = portBuilder()
     while True:
-        watchDog = serial.read(1)
+        watchDog = port.read(1)
         if data == '':
             continue
         else:
