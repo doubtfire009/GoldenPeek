@@ -441,4 +441,4 @@ class MyVideoCapture:
 
 
 # Create a window and pass it to the Application object
-GoldenPeek(tkinter.Tk(), "  李之玉出品 V2.3-20181231 ")
+GoldenPeek(tkinter.Tk(), "  李之玉出品 V2.3-20190102 ")
