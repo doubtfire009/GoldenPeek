@@ -11,9 +11,11 @@ def isnumber(aString):
 
 def halconPoints():
     img = cv2.imread(settings.catch_img_dir + "catched.jpg")
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    ret, th1 = cv2.threshold(gray, int(settings.halconThreshold), 255, cv2.THRESH_BINARY)
 
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(settings.halcon_img_dir + "halconGray.jpg", gray)
+    ret, th1 = cv2.threshold(gray, int(settings.halconThreshold), 255, cv2.THRESH_BINARY)
+    cv2.imwrite(settings.halcon_img_dir + "halconThreshold.jpg", th1)
     image, contours, hierarchy = cv2.findContours(th1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cv2.drawContours(img, contours, -1, (0, 0, 255), 3)
 
@@ -28,7 +30,6 @@ def halconPoints():
 
     Vertexes = vertexFinder(xList, yList)
 
-    # pointsFont = ['xMax_y', 'xMin_y', 'x_yMax', 'x_yMin']
     pointsFont = ['A', 'B', 'C', 'D']
     for i in Vertexes:
         cv2.circle(img, (int(i[0]), int(i[1])), 3, (55, 255, 155), 2)  # 修改最后一个参数
@@ -64,14 +65,18 @@ def vertexFinder(xList, yList):
 
 # Check Robot points whether they are legal
 def reviewRobotPoints():
-    # print("reviewRobotPoints")
+
     halconReview = settings.halconReview
+
+    print("reviewRobotPoints")
+    print(halconReview)
 
     flagRobotPoints = 0
     NoP1 = 0
     NoP2 = 0
     for itemI in halconReview:
         i = halconReview.index(itemI)
+
         for itemJ in halconReview:
             j = halconReview.index(itemJ)
             if j>i:
@@ -79,6 +84,8 @@ def reviewRobotPoints():
                     [itemI[0],itemI[1]],
                     [itemJ[0], itemJ[1]],
                 ]);
+                print("halconReviewMatrix.ndim")
+                print(halconReviewMatrix.ndim)
                 if halconReviewMatrix.ndim == 2:
                     flagRobotPoints = 1
                     NoP1 = i
@@ -121,7 +128,9 @@ def marksHalconReverseConverter(halconP1 = (0,0),halconP2 = (0,0),robotP1 = (0,0
         [float(robotP1[0]), float(robotP1[1])],
         [float(robotP2[0]), float(robotP2[1])]
     ])
+    print("halconPointsMatrix")
     print(halconPointsMatrix)
+    print("robotPointsMatrix")
     print(robotPointsMatrix)
 
     MatrixHalcon = (halconPointsMatrix.I)*robotPointsMatrix

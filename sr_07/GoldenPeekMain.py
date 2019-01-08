@@ -253,8 +253,8 @@ class GoldenPeek:
         self.autoLaunchMachineCounterSet()
         if settings.autoCease:
             self.autoLaunchMachine()
-        print(settings.autoCease)
-        print(settings.autoLaunchMachineCounter)
+        # print(settings.autoCease)
+        # print(settings.autoLaunchMachineCounter)
 
         if settings.displayerFlag == settings.INIT:
             self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open('./mountain.jpg'))
@@ -314,6 +314,8 @@ class GoldenPeek:
 
         if flagRobotPoints==1:
             hal_c.marksHalconReverseConverter(settings.halconReview[NoP1],settings.halconReview[NoP2],halconCollection[NoP1],halconCollection[NoP2])
+            print("halconConverterMatrix")
+            print(settings.halconConverterMatrix)
         else:
             print("请调整定位板角度再试一次")
             messagebox.showinfo(title='定位板', message="请调整定位板角度再试一次")
@@ -441,4 +443,4 @@ class MyVideoCapture:
 
 
 # Create a window and pass it to the Application object
-GoldenPeek(tkinter.Tk(), "  李之玉出品 V2.3-20190102 ")
+GoldenPeek(tkinter.Tk(), "  李之玉出品 V2.3-20190108 ")
