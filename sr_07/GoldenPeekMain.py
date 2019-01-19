@@ -277,6 +277,7 @@ class GoldenPeek:
 
         self.window.after(self.delay, self.update)
 
+    #截图
     def snapshot(self,displayerFlag=settings.CATCHED):
         # Get a frame from the video source
         ret, frame = self.vid.get_frame()
@@ -286,16 +287,17 @@ class GoldenPeek:
             # cv2.imwrite("frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
             i_c.img_catch(frame,displayerFlag)
 
+    #用于halcon定位的截图
     def halconCatcher(self):
-        # Catch the pic
+
         self.snapshot(settings.CATCHED)
 
-    # Get halcon points
+    # 获取halcon的定位点
     def halconPoints(self):
         hal_c.halconPoints()
         settings.displayerFlag = settings.HALCON
 
-
+    #把halcon定位点结合输入的对应机械臂坐标，转化成变换矩阵
     def halconConversionCal(self):
         # print("halconConversionCal")
         halconA = [self.nameAX_entered.get(), self.nameAY_entered.get()]
@@ -328,14 +330,19 @@ class GoldenPeek:
         mdbsGp.modbusTransferrer(0x01,1800,settings.halconConverterMatrix[1][1])
 
 
-
+    #halcon定位时候设定像素阈值
     def halconThresholdSetter(self, value):
         settings.halconThreshold = value
         print(settings.halconThreshold)
 
+###############################################
+##############图像处理##########################
+##############################################
+
+    #用于图像处理的截图
     def processorCatcher(self):
         self.snapshot(settings.CATCHED)
-
+    #处理图像
     def processorImage(self):
         thresholdCal = settings.thresholdInfo['finder']['cal']
         thresholdArea = settings.thresholdInfo['finder']['area']
@@ -348,6 +355,7 @@ class GoldenPeek:
             i_p.img_processor(settings.processType)
             settings.displayerFlag = settings.PROCESSED
 
+    #传输处理结果给Modbus
     def processorTransfer(self):
         ret = mdbsGp.modbusListTransferrer(settings.finderProcessResult)
         if ret == -1:
@@ -357,7 +365,7 @@ class GoldenPeek:
         else:
             messagebox.showinfo(title='Modbus传输', message="传输已成功")
 
-
+    #获取处理完成的信号
     def processorFetchSignal(self):
         watchDog = mdbsGp.recvWatchDog()
         if watchDog == settings.watchDog:
@@ -366,20 +374,24 @@ class GoldenPeek:
         else:
             return False
 
+    #对于不同来源设置阈值的不同数值
     def thresholdSetter(self,source = settings.thresholdSource[0],type = settings.thresholdType[0],
                         level = settings.thresholdLevel[0],value=0):
 
         settings.thresholdInfo[source][type][level] = value
 
+    #设置自动化流程的开始信号
     def autoLaunch(self):
         settings.autoCease = 1
 
+    #自动化流程时候设置流程标志
     def autoLaunchMachineCounterSet(self):
         if settings.autoLaunchMachineCounter > settings.autoCatchIntval:
             settings.autoLaunchMachineCounter = 0
         else:
             settings.autoLaunchMachineCounter = settings.autoLaunchMachineCounter + settings.delay
 
+    #开始自动化流程
     def autoLaunchMachine(self):
         if settings.autoLaunchMachineCounter == settings.autoCatchIntval:
             self.processorCatcher()
@@ -398,10 +410,11 @@ class GoldenPeek:
                 settings.autoCease = 0
 
 
-
+    #设置自动化流程结束信号
     def autoCease(self):
         self.autoCeaseReset()
 
+    #自动化流程结束的操作函数
     def autoCeaseReset(self):
         settings.autoCease = 0
         settings.displayerFlag == settings.INIT

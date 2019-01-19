@@ -250,11 +250,11 @@ class GoldenPeek:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
 
-        self.autoLaunchMachineCounterSet()
-        if settings.autoCease:
-            self.autoLaunchMachine()
-        # print(settings.autoCease)
-        # print(settings.autoLaunchMachineCounter)
+        #启动自动化流程
+
+        if settings.autoSwitch:
+            self.autoDispatch()
+        #######################
 
         if settings.displayerFlag == settings.INIT:
             self.obtained = PIL.ImageTk.PhotoImage(image=PIL.Image.open('./mountain.jpg'))
@@ -291,6 +291,10 @@ class GoldenPeek:
     def halconCatcher(self):
         
         self.snapshot(settings.CATCHED)
+
+###############################################
+#      halcon定位
+##############################################
 
     # 获取halcon的定位点
     def halconPoints(self):
@@ -336,14 +340,14 @@ class GoldenPeek:
         print(settings.halconThreshold)
 
 ###############################################
-##############图像处理##########################
+#     图像处理（手动）
 ##############################################
 
     #用于图像处理的截图
     def processorCatcher(self):
         self.snapshot(settings.CATCHED)
     #处理图像
-    def processorImage(self):
+    def processorImage(self, processType = settings.processType):
         thresholdCal = settings.thresholdInfo['finder']['cal']
         thresholdArea = settings.thresholdInfo['finder']['area']
         print("threshold")
@@ -352,7 +356,7 @@ class GoldenPeek:
         if int(thresholdCal['low'])>int(thresholdCal['high']) or int(thresholdArea['low'])>int(thresholdArea['high']):
             messagebox.showinfo(title='阈值参数', message="阈值上下限设置有误")
         else:
-            i_p.img_processor(settings.processType)
+            i_p.img_processor(processType)
             settings.displayerFlag = settings.PROCESSED
 
     #传输处理结果给Modbus
@@ -380,43 +384,87 @@ class GoldenPeek:
 
         settings.thresholdInfo[source][type][level] = value
 
+###############################################
+#     自动化流程
+##############################################
+
     #设置自动化流程的开始信号
     def autoLaunch(self):
-        settings.autoCease = 1
+        settings.autoSwitch = 1
 
-    #自动化流程时候设置流程标志
-    def autoLaunchMachineCounterSet(self):
-        if settings.autoLaunchMachineCounter > settings.autoCatchIntval:
-            settings.autoLaunchMachineCounter = 0
+
+
+    #自动化调度
+    def autoDispatch(self):
+        portAuto = mdbsGp.portBuilder()
+        stepIndicator = mdbsGp.recvWatchDog(portAuto, settings.stepIndicatorReg)
+
+
+        # if stepIndicator == settings.stepStart:
+        if stepIndicator == settings.stepImgProcess:
+            if settings.stepFinish == 0:
+                self.autoLaunchMachine(stepIndicator)
+
+        elif stepIndicator == settings.stepRobot:
+            if settings.stepFinish == 1:
+                self.autoLaunchMachine(stepIndicator)
         else:
-            settings.autoLaunchMachineCounter = settings.autoLaunchMachineCounter + settings.delay
+            self.autoLaunchMachine(stepIndicator)
 
-    #开始自动化流程
-    def autoLaunchMachine(self):
-        if settings.autoLaunchMachineCounter == settings.autoCatchIntval:
-            self.processorCatcher()
-            # print(settings.displayerFlag)
-            # time.sleep(10)
-            self.processorImage()
-            # totalTime = settings.finderProcessResult[0][0]
-            # print(settings.displayerFlag)
-            # time.sleep(10)
-            self.processorTransfer()
 
-            fetchSignal = self.processorFetchSignal()
-            print("autoLaunchMachine_fetchSignal")
-            print(fetchSignal)
-            if fetchSignal == False:
-                settings.autoCease = 0
+    #自动化截图
+    def autoImgCatcher(self):
+        self.snapshot(settings.CATCHED)
+
+    #自动化处理图像，获取坐标序列
+    def autoProcessor(self):
+        self.processorImage()
+
+
+    def autoTransfer(self):
+        portAuto = mdbsGp.portBuilder()
+        if len(settings.finderProcessResult) > 0:
+            #坐标数据就绪标志
+            coordinateReady = mdbsGp.recvWatchDog(portAuto, settings.coordinateReadyReg)
+            #坐标数据就绪标志为0，说明机械臂已经取走数据，发送成功
+            if coordinateReady == 0:
+                itemTransfer = settings.finderProcessResult.pop()
+                mdbsGp.modbusTransferrer(settings.modbusTransferAddress,settings.XDataStore,itemTransfer[0])
+                mdbsGp.modbusTransferrer(settings.modbusTransferAddress,settings.YDataStore,itemTransfer[1])
+                #告诉机械臂发送成功
+                mdbsGp.modbusTransferrer(portAuto, settings.coordinateReadyReg, 1)
+        else:
+            settings.stepFinish = 1
+
+    # 自动化操作执行流程
+    def autoLaunchMachine(self,step):
+        #监听等待
+        if step == 0:
+            settings.stepFinish = 0
+        #内部处理
+        elif step == 1:
+            self.autoImgCatcher()
+            self.autoProcessor()
+            # 此处不管有没有监测到，都直接顺次进行了
+            settings.stepFinish = 1
+        #发送坐标
+        elif step == 2:
+            self.autoTransfer()
+            settings.stepFinish = 1
+            mdbsGp.modbusTransferrer(settings.modbusTransferAddress, settings.stepIndicatorReg, 0)
+        else:
+            pass
+
+
 
 
     #设置自动化流程结束信号
     def autoCease(self):
-        self.autoCeaseReset()
+        self.autoSwitchReset()
 
     #自动化流程结束的操作函数
-    def autoCeaseReset(self):
-        settings.autoCease = 0
+    def autoSwitchReset(self):
+        settings.autoSwicth = 0
         settings.displayerFlag == settings.INIT
 
 class MyVideoCapture:

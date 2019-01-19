@@ -105,7 +105,7 @@ thresholdInfo = {
 processType = 'default'
 
 
-finderProcessResult = []
+finderProcessResult = [[12,34],[78,91],[75,18]]
 
 modbusTransferXYIntval = 10
 modbusTransferIntval = 50
@@ -115,6 +115,50 @@ modbusTransferRegStart = 500
 
 modbusWatchDog = 7788
 
-autoCease = 0
+autoSwitch = 0
 autoLaunchMachineCounter = 0
 autoCatchIntval = 1050
+
+
+############################################
+### Modbus Robots Communication Settings####
+############################################
+
+##主被动状态
+# workStatus=0时候，程序监听modbus
+# workStatus=1时候，程序自己处理数据
+workStatus = False
+
+
+##阶段标志位偏移数
+stepIndicatorReg = 5
+
+#开始阶段
+stepStart = 0
+#电脑处理阶段（截图，处理）
+stepImgProcess = 1
+#抓取阶段
+stepRobot = 2
+
+#状态总数
+stepNum = 3
+
+#电脑处理所处阶段
+stepRequired = 0
+
+#电脑处理阶段内部是否完成的标志,
+# stepNum包含的阶段，每个阶段开始时候置0，完成置1
+stepFinish = 0
+
+
+#坐标数据就绪标志位偏移数
+coordinateReadyReg = 10
+
+#坐标数据存储区偏移数
+XDataStore = 20
+YDataStore = 21
+
+#看门狗调度计数器
+watchDogCounter = 0
+#看门狗计数器阈值（过此数值则归零）
+watchDogCounterThresh = 2000

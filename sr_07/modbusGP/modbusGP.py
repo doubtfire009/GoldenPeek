@@ -17,7 +17,7 @@ def portBuilder():
 def modbusTransferrer(address=settings.modbusTransferAddress,regStart=settings.modbusTransferRegStart,value=0):
     port = portBuilder()
 
-    send = ModbusCmd().cmd03(address, regStart, value)
+    send = ModbusCmd().cmd06(address, regStart, value)
 
     port.write(send)
 
@@ -36,13 +36,20 @@ def modbusListTransferrer(resList = []):
     return ret
 
 
-def recvWatchDog():
-    port = portBuilder()
-    while True:
+def recvWatchDog(port, regStart, regCount=1):
+
+    address = 0x01
+    #看门狗计数器为0，则发送读取信号
+    if settings.watchDogCounter == 0:
+        readSignal = ModbusCmd().cmd03(address, regStart, regCount)
+        print(readSignal)
+    #其他时间都持续获取串口信息
+    else:
         watchDog = port.read(1)
-        if data == '':
-            continue
-        else:
-            break
-        time.sleep(1)
+
+    settings.watchDogCounter = settings.watchDogCounter + 1
+
+    if settings.watchDogCounterThresh < settings.watchDogCounter:
+        settings.watchDogCounter = 0
+
     return watchDog
