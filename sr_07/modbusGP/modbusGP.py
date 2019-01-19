@@ -43,6 +43,7 @@ def recvWatchDog(port, regStart, regCount=1):
     if settings.watchDogCounter == 0:
         readSignal = ModbusCmd().cmd03(address, regStart, regCount)
         print(readSignal)
+        watchDog = 0
     #其他时间都持续获取串口信息
     else:
         watchDog = port.read(1)
