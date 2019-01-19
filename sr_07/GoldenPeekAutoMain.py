@@ -252,7 +252,7 @@ class GoldenPeek:
 
         #启动自动化流程
 
-        if settings.autoSwitch:
+        if settings.autoSwitch == 1:
             self.autoDispatch()
         #######################
 

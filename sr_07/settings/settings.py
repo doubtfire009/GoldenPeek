@@ -116,6 +116,7 @@ modbusTransferRegStart = 500
 modbusWatchDog = 7788
 
 autoSwitch = 0
+autoCease = 0
 autoLaunchMachineCounter = 0
 autoCatchIntval = 1050
 

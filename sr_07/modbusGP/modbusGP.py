@@ -52,4 +52,6 @@ def recvWatchDog(port, regStart, regCount=1):
     if settings.watchDogCounterThresh < settings.watchDogCounter:
         settings.watchDogCounter = 0
 
+
+
     return watchDog
