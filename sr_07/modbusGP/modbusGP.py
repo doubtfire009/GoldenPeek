@@ -37,9 +37,17 @@ def modbusListTransferrer(resList = []):
 
 
 def modbusAutoTransferrer(port,regStart=settings.modbusTransferRegStart,value=0):
-    address = settings.modbusTransferAddress
+    # address = settings.modbusTransferAddress
+    address = 0x01
     send = ModbusCmd().cmd06(address, regStart, value)
     port.write(send)
+
+def modbusAutoListTransferrer(port,regStart = settings.modbusTransferRegStart, regCount = 1, list=[0]):
+    address = settings.modbusTransferAddress
+    # address = 0x01
+    send = ModbusCmd().cmd10(address, regStart, regCount, list)
+    port.write(send)
+    print(send)
 
 
 def recvWatchDog(port, regStart, regCount=1, forceZero = False):
@@ -52,12 +60,14 @@ def recvWatchDog(port, regStart, regCount=1, forceZero = False):
     if settings.watchDogCounter == 0:
         readSignal = ModbusCmd().cmd03(address, regStart, regCount)
         port.write(readSignal)
+
     #其他时间都持续获取串口信息
     else:
         settings.watchDogReg = port.read(1)
         settings.watchDogRegList.append(settings.watchDogReg)
 
-
+    print(regStart)
+    print(settings.watchDogRegList)
     settings.watchDogCounter = settings.watchDogCounter + 1
 
     if settings.watchDogCounterThresh < settings.watchDogCounter:

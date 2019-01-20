@@ -395,19 +395,23 @@ class GoldenPeek:
 
 
     #自动化调度
+    #注：1.所有的端口收必须在调度内完成
+    #    2.每一次的update只能进行一次端口的操作，发和收一视同仁
     def autoDispatch(self):
         # portAuto = mdbsGp.portBuilder()
         #此处端口一次只进行一个寄存器的读取，根据所处阶段不同选择不同的寄存器进行读取
-        if settings.stepRequired == 0:
-            stepIndicator = mdbsGp.recvWatchDog(self.portAuto, settings.stepIndicatorReg)
-            print('stepIndicator')
-            print(stepIndicator)
-        else:
+        if settings.stepRequired == settings.stepRobot:
             stepIndicator = settings.stepRequired
-            # 坐标数据就绪标志
-            coordinateReady = mdbsGp.recvWatchDog(self.portAuto, settings.coordinateReadyReg)
-            print('coordinateReady')
-            print(coordinateReady)
+            if settings.coordinateReadyFinish == 0:
+                # 坐标数据就绪标志
+                settings.coordinateReady = mdbsGp.recvWatchDog(self.portAuto, settings.coordinateReadyReg)
+
+        else:
+            stepIndicator = mdbsGp.recvWatchDog(self.portAuto, settings.stepIndicatorReg)
+            # print('stepIndicator')
+            # print(stepIndicator)
+
+
 
         if stepIndicator == settings.stepStart:
             self.autoLaunchMachine(stepIndicator)
@@ -418,7 +422,12 @@ class GoldenPeek:
             if settings.stepRequired != settings.stepRobot:
                 settings.stepRequired = settings.stepRobot
             else:
-                self.autoLaunchMachine(stepIndicator, coordinateReady)
+                if settings.coordinateReadyFinish == 1:
+                    self.autoLaunchMachine(stepIndicator)
+                else:
+                    #保持接受com口的coordinateReady信息，直到接收到正确信号
+                    if settings.coordinateReady >= 0:
+                        settings.coordinateReadyFinish = 1
         else:
             pass
 
@@ -432,25 +441,31 @@ class GoldenPeek:
         self.processorImage()
 
 
-    def autoTransfer(self, coordinateReady=0):
+    def autoTransfer(self):
         # portAuto = mdbsGp.portBuilder()
         if len(settings.finderProcessResult) > 0:
             print(len(settings.finderProcessResult))
             #坐标数据就绪标志
             # coordinateReady = mdbsGp.recvWatchDog(self.portAuto, settings.coordinateReadyReg, 1, True)
             #坐标数据就绪标志为0，说明机械臂已经取走数据，发送成功
-            if coordinateReady == 0:
+            if settings.coordinateReady == 0:
                 itemTransfer = settings.finderProcessResult.pop()
-                mdbsGp.modbusAutoTransferrer(self.portAuto,settings.XDataStore,itemTransfer[0])
-                mdbsGp.modbusAutoTransferrer(self.portAuto,settings.YDataStore,itemTransfer[1])
+                print(itemTransfer)
+                # print(itemTransfer[0])
+                # print(itemTransfer[1])
+                mdbsGp.modbusAutoListTransferrer(self.portAuto,settings.XDataStore, 2, itemTransfer)
+                # mdbsGp.modbusAutoTransferrer(self.portAuto,settings.YDataStore,itemTransfer[1])
+                print("hhhss")
                 #告诉机械臂发送成功
                 # mdbsGp.modbusAutoTransferrer(self.portAuto, settings.coordinateReadyReg, 1)
         else:
             settings.stepFinish = 1
-        settings.stepRequired = 0
+            settings.stepRequired = 0
+            settings.coordinateReadyFinish = 0
+
 
     # 自动化操作执行流程
-    def autoLaunchMachine(self,step=0,coordinateReady=0):
+    def autoLaunchMachine(self,step=0):
         #监听等待
         if step == 0:
             settings.stepFinish = 0
@@ -465,14 +480,13 @@ class GoldenPeek:
         #发送坐标
         elif step == 2:
             print("gg")
-            if coordinateReady >= 0:
-                self.autoTransfer(coordinateReady)
+            print(settings.coordinateReady)
+            if settings.coordinateReady >= 0:
+                self.autoTransfer()
                 settings.stepFinish = 1
-                mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 0)
+                # mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 0)
         else:
             pass
-
-
 
 
     #设置自动化流程结束信号

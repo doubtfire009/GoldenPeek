@@ -105,7 +105,8 @@ thresholdInfo = {
 processType = 'default'
 
 
-finderProcessResult = [[12,34],[78,91],[75,18]]
+# finderProcessResult = [[12,34],[78,91],[7,18]]
+finderProcessResult = [[7,18]]
 
 modbusTransferXYIntval = 10
 modbusTransferIntval = 50
@@ -154,10 +155,12 @@ stepFinish = 0
 
 #坐标数据就绪标志位偏移数
 coordinateReadyReg = 10
+#在抓取阶段：坐标数据是否读取过
+coordinateReadyFinish = 0
 
 #坐标数据存储区偏移数
-XDataStore = 20
-YDataStore = 21
+XDataStore = 30
+YDataStore = 31
 
 #看门狗调度计数器
 watchDogCounter = 0
