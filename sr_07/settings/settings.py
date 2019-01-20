@@ -162,4 +162,10 @@ YDataStore = 21
 #看门狗调度计数器
 watchDogCounter = 0
 #看门狗计数器阈值（过此数值则归零）
-watchDogCounterThresh = 2000
+watchDogCounterThresh = 200
+#看门狗返回值
+watchDogReg = 0
+#看门狗返回值的数组
+watchDogRegList = []
+#看门狗返回值的数组合法长度
+watchDogRegListLenReq = 7
