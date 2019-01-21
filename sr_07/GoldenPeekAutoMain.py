@@ -5,6 +5,7 @@ import cv2
 import time
 import PIL.Image, PIL.ImageTk
 from functools import partial
+import time
 
 import settings.settings as settings
 import image_catcher.img_catcher as i_c
@@ -445,10 +446,20 @@ class GoldenPeek:
     ###################################
     #和寄存器通信的函数
     def regCommunication(self):
+
+        # print("stepNow")
+        # print(settings.stepNow)
+        # print("stepFinish")
+        # print(settings.stepFinish)
+        # print("coordinateReady")
+        # print(settings.coordinateReady)
         #等待机械臂初始化状态
         # 阶段 = 0
         if settings.stepNow == 0:
             settings.stepIndicator = mdbsGp.recvWatchDog(self.portAuto, settings.stepIndicatorReg)
+            if settings.stepIndicator >= 0:
+                print(settings.stepIndicator)
+                settings.stepNow = settings.stepIndicator
         #图像处理阶段1.1，1.2
         # 阶段 = 1
         elif settings.stepNow == 1:
@@ -456,6 +467,10 @@ class GoldenPeek:
                 pass
             else:
                 mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 2)
+                settings.stepNow = 0
+                settings.stepFinish = 0
+
+
         # 图像处理阶段2.1，2.2
         # 阶段 = 2
         else:
@@ -467,11 +482,11 @@ class GoldenPeek:
                     mdbsGp.modbusAutoTransferrer(self.portAuto, settings.coordinateReadyReg, 1)
                     settings.coordinateReady = 1
                 else:
-                    settings.stepIndicator = mdbsGp.recvWatchDog(self.portAuto, settings.coordinateReadyReg)
+                    settings.coordinateReady = mdbsGp.recvWatchDog(self.portAuto, settings.coordinateReadyReg)
             else:
                 mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 0)
                 settings.stepFinish = 0
-        settings.stepNow = settings.stepIndicator
+
 
 
     #自动化功能的函数
@@ -513,7 +528,7 @@ class GoldenPeek:
                 settings.stepFinish = 1
         #发送坐标
         elif step == 2:
-            print(settings.coordinateReady)
+
             if settings.coordinateReady == 0:
                 self.autoTransfer()
         else:

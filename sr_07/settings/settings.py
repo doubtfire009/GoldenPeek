@@ -158,9 +158,9 @@ stepFinish = 0
 
 
 #坐标数据就绪标志位偏移数
-coordinateReadyReg = 10
-#在抓取阶段：坐标数据是否读取过
-coordinateReadyFinish = 0
+coordinateReadyReg = 35
+#取出的坐标数据就绪标志位数值
+coordinateReady = 0
 
 #坐标数据存储区偏移数
 XDataStore = 30
