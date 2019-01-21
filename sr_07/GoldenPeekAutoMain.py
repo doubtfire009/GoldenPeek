@@ -289,7 +289,7 @@ class GoldenPeek:
 
     #用于halcon定位的截图
     def halconCatcher(self):
-        
+
         self.snapshot(settings.CATCHED)
 
 ###############################################
@@ -397,7 +397,7 @@ class GoldenPeek:
     #自动化调度
     #注：1.所有的端口收必须在调度内完成
     #    2.每一次的update只能进行一次端口的操作，发和收一视同仁
-    def autoDispatch(self):
+    def autoDispatchBack(self):
         # portAuto = mdbsGp.portBuilder()
         #此处端口一次只进行一个寄存器的读取，根据所处阶段不同选择不同的寄存器进行读取
         if settings.stepRequired == settings.stepRobot:
@@ -431,7 +431,51 @@ class GoldenPeek:
         else:
             pass
 
+        # 自动化调度
+        # 注：1.所有的端口收必须在调度内完成
+        #    2.每一次的update只能进行一次端口的操作，发和收一视同仁
 
+    def autoDispatch(self):
+        # 寄存器通信
+        self.regCommunication()
+
+        # 自动化功能执行
+        self.autoLaunchMachine(settings.stepIndicator)
+
+    ###################################
+    #和寄存器通信的函数
+    def regCommunication(self):
+        #等待机械臂初始化状态
+        # 阶段 = 0
+        if settings.stepNow == 0:
+            settings.stepIndicator = mdbsGp.recvWatchDog(self.portAuto, settings.stepIndicatorReg)
+        #图像处理阶段1.1，1.2
+        # 阶段 = 1
+        elif settings.stepNow == 1:
+            if settings.stepFinish == 0:
+                pass
+            else:
+                mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 2)
+        # 图像处理阶段2.1，2.2
+        # 阶段 = 2
+        else:
+            if settings.stepFinish == 0:
+                #可进行写坐标操作
+                if settings.coordinateReady == 0:
+                    pass
+                elif settings.coordinateReady == 0.5:
+                    mdbsGp.modbusAutoTransferrer(self.portAuto, settings.coordinateReadyReg, 1)
+                    settings.coordinateReady = 1
+                else:
+                    settings.stepIndicator = mdbsGp.recvWatchDog(self.portAuto, settings.coordinateReadyReg)
+            else:
+                mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 0)
+                settings.stepFinish = 0
+        settings.stepNow = settings.stepIndicator
+
+
+    #自动化功能的函数
+    ##########################################
     #自动化截图
     def autoImgCatcher(self):
         self.snapshot(settings.CATCHED)
@@ -445,24 +489,15 @@ class GoldenPeek:
         # portAuto = mdbsGp.portBuilder()
         if len(settings.finderProcessResult) > 0:
             print(len(settings.finderProcessResult))
-            #坐标数据就绪标志
-            # coordinateReady = mdbsGp.recvWatchDog(self.portAuto, settings.coordinateReadyReg, 1, True)
             #坐标数据就绪标志为0，说明机械臂已经取走数据，发送成功
             if settings.coordinateReady == 0:
                 itemTransfer = settings.finderProcessResult.pop()
                 print(itemTransfer)
-                # print(itemTransfer[0])
-                # print(itemTransfer[1])
                 mdbsGp.modbusAutoListTransferrer(self.portAuto,settings.XDataStore, 2, itemTransfer)
-                # mdbsGp.modbusAutoTransferrer(self.portAuto,settings.YDataStore,itemTransfer[1])
-                print("hhhss")
-                #告诉机械臂发送成功
-                # mdbsGp.modbusAutoTransferrer(self.portAuto, settings.coordinateReadyReg, 1)
+                settings.coordinateReady = 0.5
         else:
             settings.stepFinish = 1
-            settings.stepRequired = 0
-            settings.coordinateReadyFinish = 0
-
+            settings.coordinateReady = 0
 
     # 自动化操作执行流程
     def autoLaunchMachine(self,step=0):
@@ -471,20 +506,16 @@ class GoldenPeek:
             settings.stepFinish = 0
         #内部处理
         elif step == 1:
-            self.autoImgCatcher()
-            # self.autoProcessor()
-            # 此处不管有没有监测到，都直接顺次进行了
-            settings.stepFinish = 1
-            #将阶段标志位设置为2，等候机械臂抓取
-            mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 2)
+            if settings.stepFinish == 0:
+                self.autoImgCatcher()
+                # self.autoProcessor()
+                # 此处不管有没有监测到，都直接顺次进行了
+                settings.stepFinish = 1
         #发送坐标
         elif step == 2:
-            print("gg")
             print(settings.coordinateReady)
-            if settings.coordinateReady >= 0:
+            if settings.coordinateReady == 0:
                 self.autoTransfer()
-                settings.stepFinish = 1
-                # mdbsGp.modbusAutoTransferrer(self.portAuto, settings.stepIndicatorReg, 0)
         else:
             pass
 

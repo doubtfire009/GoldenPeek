@@ -148,6 +148,10 @@ stepNum = 3
 #电脑处理所处阶段
 stepRequired = 0
 
+stepNow= 0
+#获取的阶段寄存器数值
+stepIndicator = 0
+
 #电脑处理阶段内部是否完成的标志,
 # stepNum包含的阶段，每个阶段开始时候置0，完成置1
 stepFinish = 0
