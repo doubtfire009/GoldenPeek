@@ -10,11 +10,38 @@ print(port_list[0][0])
 port = serial.Serial(port=port_list[0][0], baudrate=19200, bytesize=8, parity='E', stopbits=1)
 
 
+def recv(serial):
+  while True:
+    data =serial.read(1)
+    if data == '':
+      continue
+    else:
+      break
+    sleep(0.02)
+  return data
+
+# address = 0x01
+# regadd = 100
+# value = 300
+
+# address = 0x01
+# regadd = 80
+# value = 7
+# send = ModbusCmd().cmd06(address, regadd, value)
+#
+# port.write(send)
+# print(send)
 
 address = 0x01
-regadd = 200
-value = 3
-send = ModbusCmd().cmd06(address, regadd, value)
+regadd = 30
+reg_count = 2
+value = [10,11]
+send = ModbusCmd().cmd10(address, regadd,reg_count, value)
 
 port.write(send)
 print(send)
+
+while True:
+    data =recv(port)
+    if data != '':
+        print(data)

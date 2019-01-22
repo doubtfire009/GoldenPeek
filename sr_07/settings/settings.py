@@ -133,7 +133,7 @@ workStatus = False
 
 
 ##阶段标志位偏移数
-stepIndicatorReg = 5
+stepIndicatorReg = 43
 
 #开始阶段
 stepStart = 0
@@ -154,7 +154,8 @@ stepIndicator = 0
 
 #电脑处理阶段内部是否完成的标志,
 # stepNum包含的阶段，每个阶段开始时候置0，完成置1
-stepFinish = 0
+stepFinish1 = 0
+stepFinish2 = 0
 
 
 #坐标数据就绪标志位偏移数
