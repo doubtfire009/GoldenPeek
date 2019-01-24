@@ -52,12 +52,17 @@ catch_img_dir = './images_storage/catched/'
 halcon_img_dir = './images_storage/halcon/'
 process_img_dir = './images_storage/processed/'
 
+#halcon circles
+halconCircle = []
 
 #Halcon X-Y
 halcon_A = [0,0]
 halcon_B = [0,0]
 halcon_C = [0,0]
 halcon_D = [0,0]
+
+halconHoughParam1 = 100
+halconHoughParam2 = 30
 
 #threshold types
 
@@ -67,7 +72,14 @@ thresholdLevel = ['low','high']
 
 thresholdInfo = {
     'halcon':
-        {'cal':
+        {'halcon':
+             {
+                'halconHoughParam1':100,
+                'halconHoughParam2':30,
+                'halconHoughminRadius':1,
+                'halconHoughmaxRadius':1
+             },
+        'cal':
              {
                  'low': 0,
                  'high':0
@@ -84,6 +96,11 @@ thresholdInfo = {
             {
                 'low': 0,
                 'high': 0
+            },
+        'hough':
+            {
+                'halconHoughminRadius':1,
+                'halconHoughmaxRadius': 1
             }
         },
     'autoFinder':
@@ -104,9 +121,10 @@ thresholdInfo = {
 
 processType = 'default'
 
+processCircle = []
 
 # finderProcessResult = [[12,34],[78,91],[7,18]]
-finderProcessResult = [[7,18]]
+finderProcessResult = []
 
 modbusTransferXYIntval = 10
 modbusTransferIntval = 50

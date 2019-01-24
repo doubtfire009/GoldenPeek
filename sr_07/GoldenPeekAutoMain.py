@@ -57,7 +57,7 @@ class GoldenPeek:
         self.tabFinderShow()
 
 
-        self.portAuto = mdbsGp.portBuilder()
+        self.portAuto = 0
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
         # keep obtaining the img on the canvas
@@ -71,78 +71,61 @@ class GoldenPeek:
         self.labelHalconA = ttk.LabelFrame(self.tabHalcon, text=' 标定A点坐标 ')
         self.labelHalconA.grid(row=0, column=0, padx=8, pady=4)
 
+        self.labelANo = ttk.Label(self.labelHalconA, text="对应编号")
+        self.labelANo.grid(row=1, column=0, sticky='W')
+
+        # Adding a Textbox Entry widget
+        self.nameANo = tkinter.StringVar()
+        self.nameANo_entered = ttk.Entry(self.labelHalconA, width=12, textvariable=self.nameANo)
+        self.nameANo_entered.grid(row=1, column=1, sticky='W')  # align left/West
+
+        #坐标的X
         self.labelAX = ttk.Label(self.labelHalconA, text="坐标X")
-        self.labelAX.grid(row=1, column=0, sticky='W')
+        self.labelAX.grid(row=2, column=0, sticky='W')
 
         # Adding a Textbox Entry widget
         self.nameAX = tkinter.StringVar()
         self.nameAX_entered = ttk.Entry(self.labelHalconA, width=12, textvariable=self.nameAX)
-        self.nameAX_entered.grid(row=1, column=1, sticky='W')  # align left/West
+        self.nameAX_entered.grid(row=2, column=1, sticky='W')  # align left/West
 
+        # 坐标的Y
         self.labelAY = ttk.Label(self.labelHalconA, text="坐标Y")
-        self.labelAY.grid(row=2, column=0, sticky='W')
+        self.labelAY.grid(row=3, column=0, sticky='W')
 
         self.nameAY = tkinter.StringVar()
         self.nameAY_entered = ttk.Entry(self.labelHalconA, width=12, textvariable=self.nameAY)
-        self.nameAY_entered.grid(row=2, column=1, sticky='E')  # align left/West
+        self.nameAY_entered.grid(row=3, column=1, sticky='E')  # align left/West
 
 
         # HalconB
         self.labelHalconB = ttk.LabelFrame(self.tabHalcon, text=' 标定B点坐标 ')
         self.labelHalconB.grid(row=0, column=1, padx=8, pady=4)
 
+        self.labelBNo = ttk.Label(self.labelHalconB, text="对应编号")
+        self.labelBNo.grid(row=1, column=0, sticky='W')
+
+        # Adding a Textbox Entry widget
+        self.nameBNo = tkinter.StringVar()
+        self.nameBNo_entered = ttk.Entry(self.labelHalconB, width=12, textvariable=self.nameBNo)
+        self.nameBNo_entered.grid(row=1, column=1, sticky='W')  # align left/West
+
+
         self.labelBX = ttk.Label(self.labelHalconB, text="坐标X")
-        self.labelBX.grid(row=1, column=0, sticky='W')
+        self.labelBX.grid(row=2, column=0, sticky='W')
 
         # Adding a Textbox Entry widget
         self.nameBX = tkinter.StringVar()
         self.nameBX_entered = ttk.Entry(self.labelHalconB, width=12, textvariable=self.nameBX)
-        self.nameBX_entered.grid(row=1, column=1, sticky='W')  # align left/West
+        self.nameBX_entered.grid(row=2, column=1, sticky='W')  # align left/West
 
         self.labelBY = ttk.Label(self.labelHalconB, text="坐标Y")
-        self.labelBY.grid(row=2, column=0, sticky='W')
+        self.labelBY.grid(row=3, column=0, sticky='W')
 
         self.nameBY = tkinter.StringVar()
         self.nameBY_entered = ttk.Entry(self.labelHalconB, width=12, textvariable=self.nameBY)
-        self.nameBY_entered.grid(row=2, column=1, sticky='E')  # align left/West
+        self.nameBY_entered.grid(row=3, column=1, sticky='E')  # align left/West
 
-        # HalconC
-        self.labelHalconC = ttk.LabelFrame(self.tabHalcon, text=' 标定C点坐标 ')
-        self.labelHalconC.grid(row=0, column=2, padx=8, pady=4)
 
-        self.labelCX = ttk.Label(self.labelHalconC, text="坐标X")
-        self.labelCX.grid(row=1, column=0, sticky='W')
-
-        # Adding a Textbox Entry widget
-        self.nameCX = tkinter.StringVar()
-        self.nameCX_entered = ttk.Entry(self.labelHalconC, width=12, textvariable=self.nameCX)
-        self.nameCX_entered.grid(row=1, column=1, sticky='W')  # align left/West
-
-        self.labelCY = ttk.Label(self.labelHalconC, text="坐标Y")
-        self.labelCY.grid(row=2, column=0, sticky='W')
-
-        self.nameCY = tkinter.StringVar()
-        self.nameCY_entered = ttk.Entry(self.labelHalconC, width=12, textvariable=self.nameCY)
-        self.nameCY_entered.grid(row=2, column=1, sticky='E')  # align left/West
-
-        # HalconD
-        self.labelHalconD = ttk.LabelFrame(self.tabHalcon, text=' 标定D点坐标 ')
-        self.labelHalconD.grid(row=0, column=3, padx=8, pady=4)
-
-        self.labelDX = ttk.Label(self.labelHalconD, text="坐标X")
-        self.labelDX.grid(row=1, column=0, sticky='W')
-
-        # Adding a Textbox Entry widget
-        self.nameDX = tkinter.StringVar()
-        self.nameDX_entered = ttk.Entry(self.labelHalconD, width=12, textvariable=self.nameDX)
-        self.nameDX_entered.grid(row=1, column=1, sticky='W')  # align left/West
-
-        self.labelDY = ttk.Label(self.labelHalconD, text="坐标Y")
-        self.labelDY.grid(row=2, column=0, sticky='W')
-
-        self.nameDY = tkinter.StringVar()
-        self.nameDY_entered = ttk.Entry(self.labelHalconD, width=12, textvariable=self.nameDY)
-        self.nameDY_entered.grid(row=2, column=1, sticky='E')  # align left/West
 
         # HalconCatchedButton
         self.labelHalconCatchedButton = ttk.LabelFrame(self.tabHalcon, text=' 截图按钮 ')
@@ -166,10 +149,26 @@ class GoldenPeek:
         self.halconCalButton.grid(row=1, column=0)
 
         # HalconCalThreshold
-        self.labelHalconCalThreshold = ttk.LabelFrame(self.tabHalcon, text=' 阈值设定 ')
-        self.labelHalconCalThreshold.grid(row=1, column=3, padx=8, pady=4)
+        self.labelhalconHoughminRadius = ttk.LabelFrame(self.tabHalcon, text=' 圆半径最小值 ')
+        self.labelhalconHoughminRadius.grid(row=0, column=2, padx=8, pady=4)
         # Adding HalconCal Scale Threshold
-        self.halconCalThreshold = tkinter.Scale(self.labelHalconCalThreshold, from_=0, to=255, orient='horizontal', showvalue=1, command=self.halconThresholdSetter)
+        self.halconHoughminRadius = tkinter.Scale(self.labelhalconHoughminRadius, from_=1, to=100, orient='horizontal', showvalue=1, command=partial(self.thresholdSetter,'halcon', 'halcon','halconHoughminRadius'))
+        self.halconHoughminRadius.grid(row=1, column=0)
+
+        # HalconCalThreshold
+        self.labelhalconHoughmaxRadius = ttk.LabelFrame(self.tabHalcon, text=' 圆半径最大值 ')
+        self.labelhalconHoughmaxRadius.grid(row=0, column=3, padx=8, pady=4)
+        # Adding HalconCal Scale Threshold
+        self.halconHoughmaxRadius = tkinter.Scale(self.labelhalconHoughmaxRadius, from_=1, to=100, orient='horizontal',
+                                                  showvalue=1, command=partial(self.thresholdSetter, 'halcon', 'halcon','halconHoughmaxRadius'))
+        self.halconHoughmaxRadius.grid(row=1, column=0)
+
+        # HalconCalThreshold
+        self.labelHalconCalThreshold = ttk.LabelFrame(self.tabHalcon, text=' 阈值设定 ')
+        self.labelHalconCalThreshold.grid(row=0, column=4, padx=8, pady=4)
+        # Adding HalconCal Scale Threshold
+        self.halconCalThreshold = tkinter.Scale(self.labelHalconCalThreshold, from_=1, to=255, orient='horizontal',
+                                                showvalue=1, command=self.halconThresholdSetter)
         self.halconCalThreshold.grid(row=1, column=0)
 
     def tabFinderShow(self):
@@ -188,7 +187,7 @@ class GoldenPeek:
         self.processorButton.grid(row=1, column=1)
 
         # Adding Process Button
-        self.transferButton = ttk.Button(self.labelFinderButton, text="发送坐标", command=self.processorTransfer)
+        self.transferButton = ttk.Button(self.labelFinderButton, text="发送坐标", command=self.processorWrite)
         self.transferButton.grid(row=1, column=2)
 
         # Adding Process Button
@@ -213,7 +212,7 @@ class GoldenPeek:
         self.labelfinderCalThresholdLow = ttk.LabelFrame(self.tabFinder, text=' 像素阈值(低)设定 ')
         self.labelfinderCalThresholdLow.grid(row=1, column=0)
         # Adding HalconCal Scale Threshold
-        self.finderCalThresholdLow = tkinter.Scale(self.labelfinderCalThresholdLow, from_=0, to=255, orient='horizontal',
+        self.finderCalThresholdLow = tkinter.Scale(self.labelfinderCalThresholdLow, from_=1, to=255, orient='horizontal',
                                                 showvalue=1, command=partial(self.thresholdSetter,'finder','cal','low'))
         self.finderCalThresholdLow.grid(row=1, column=0)
 
@@ -221,26 +220,27 @@ class GoldenPeek:
         self.labelfinderCalThresholdHigh = ttk.LabelFrame(self.tabFinder, text=' 像素阈值(高)设定 ')
         self.labelfinderCalThresholdHigh.grid(row=1, column=1)
         # Adding HalconCal Scale Threshold
-        self.finderCalThresholdHigh = tkinter.Scale(self.labelfinderCalThresholdHigh, from_=0, to=255, orient='horizontal',
+        self.finderCalThresholdHigh = tkinter.Scale(self.labelfinderCalThresholdHigh, from_=1, to=255, orient='horizontal',
                                                    showvalue=1, command=partial(self.thresholdSetter,'finder', 'cal','high'))
         self.finderCalThresholdHigh.grid(row=1, column=0)
 
         # Finder Threshold
-        self.labelfinderAreaThresholdLow = ttk.LabelFrame(self.tabFinder, text=' 面积阈值(低)设定 ')
-        self.labelfinderAreaThresholdLow.grid(row=1, column=2)
+        self.labelfinderHoughminRadius = ttk.LabelFrame(self.tabFinder, text=' 圆半径最小值 ')
+        self.labelfinderHoughminRadius.grid(row=1, column=2)
         # Adding HalconCal Scale Threshold
-        self.finderAreaThresholdLow = tkinter.Scale(self.labelfinderAreaThresholdLow, from_=0, to=1000, orient='horizontal',
-                                                   showvalue=1, command=partial(self.thresholdSetter,'finder', 'area','low'))
-        self.finderAreaThresholdLow.grid(row=1, column=0)
+        self.finderHoughminRadius = tkinter.Scale(self.labelfinderHoughminRadius, from_=1, to=100, orient='horizontal',
+                                                   showvalue=1, command=partial(self.thresholdSetter,'finder', 'hough', 'finderHoughminRadius'))
+        self.finderHoughminRadius.grid(row=1, column=0)
 
         # Finder Threshold
-        self.labelfinderAreaThresholdHigh = ttk.LabelFrame(self.tabFinder, text=' 面积阈值(高)设定 ')
-        self.labelfinderAreaThresholdHigh.grid(row=1, column=3)
+        self.labelfinderHoughmaxRadius = ttk.LabelFrame(self.tabFinder, text=' 圆半径最小值 ')
+        self.labelfinderHoughmaxRadius.grid(row=1, column=3)
         # Adding HalconCal Scale Threshold
-        self.finderAreaThresholdHigh = tkinter.Scale(self.labelfinderAreaThresholdHigh, from_=0, to=1000, orient='horizontal',
+        self.finderHoughmaxRadius = tkinter.Scale(self.labelfinderHoughmaxRadius, from_=1, to=100, orient='horizontal',
                                                     showvalue=1,
-                                                    command=partial(self.thresholdSetter,'finder', 'area','high'))
-        self.finderAreaThresholdHigh.grid(row=1, column=0)
+                                                    command=partial(self.thresholdSetter,'finder', 'hough', 'finderHoughmaxRadius'))
+        self.finderHoughmaxRadius.grid(row=1, column=0)
+
 
 
     def update(self):
@@ -285,7 +285,6 @@ class GoldenPeek:
 
         if ret:
 
-            # cv2.imwrite("frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
             i_c.img_catch(frame,displayerFlag)
 
     #用于halcon定位的截图
@@ -299,40 +298,33 @@ class GoldenPeek:
 
     # 获取halcon的定位点
     def halconPoints(self):
-        hal_c.halconPoints()
+        hal_c.halconHoughPoints()
+        # hal_c.halconPoints()
         settings.displayerFlag = settings.HALCON
 
     #把halcon定位点结合输入的对应机械臂坐标，转化成变换矩阵
     def halconConversionCal(self):
         # print("halconConversionCal")
-        halconA = [self.nameAX_entered.get(), self.nameAY_entered.get()]
-        halconB = [self.nameBX_entered.get(), self.nameBY_entered.get()]
-        halconC = [self.nameCX_entered.get(), self.nameCY_entered.get()]
-        halconD = [self.nameDX_entered.get(), self.nameDY_entered.get()]
+        halconA = [self.nameANo_entered.get(), self.nameAX_entered.get(), self.nameAY_entered.get()]
+        halconB = [self.nameBNo_entered.get(), self.nameBX_entered.get(), self.nameBY_entered.get()]
 
-        halconCollection = [halconA,halconB,halconC,halconD]
+
+        halconCollection = [halconA,halconB]
 
         if not(hal_c.halconCollectionCheck(halconCollection)):
             messagebox.showinfo(title='机械臂坐标', message="机械臂坐标不合法")
 
 
         # 检查halcon定位点坐标，是否能组成获取转换方程的矩阵
-        NoP1,NoP2,flagRobotPoints = hal_c.reviewRobotPoints()
+        flagRobotPoints = hal_c.reviewRobotPoints(halconCollection)
 
         if flagRobotPoints==1:
-            hal_c.marksHalconReverseConverter(settings.halconReview[NoP1],settings.halconReview[NoP2],halconCollection[NoP1],halconCollection[NoP2])
+            hal_c.marksHalconReverseConverter(halconCollection)
             print("halconConverterMatrix")
             print(settings.halconConverterMatrix)
         else:
-            print("请调整定位板角度再试一次")
+            print("请调整定位板角度或使用其他坐标点")
             messagebox.showinfo(title='定位板', message="请调整定位板角度再试一次")
-
-        # 发送测试代码
-
-        mdbsGp.modbusTransferrer(0x01,600,settings.halconConverterMatrix[0][0])
-        mdbsGp.modbusTransferrer(0x01,1000,settings.halconConverterMatrix[0][1])
-        mdbsGp.modbusTransferrer(0x01,1400,settings.halconConverterMatrix[1][0])
-        mdbsGp.modbusTransferrer(0x01,1800,settings.halconConverterMatrix[1][1])
 
 
     #halcon定位时候设定像素阈值
@@ -350,25 +342,22 @@ class GoldenPeek:
     #处理图像
     def processorImage(self, processType = settings.processType):
         thresholdCal = settings.thresholdInfo['finder']['cal']
-        thresholdArea = settings.thresholdInfo['finder']['area']
+        thresHough = settings.thresholdInfo['finder']['hough']
         print("threshold")
         print(thresholdCal)
-        print(thresholdArea)
-        if int(thresholdCal['low'])>int(thresholdCal['high']) or int(thresholdArea['low'])>int(thresholdArea['high']):
+        print(thresHough)
+        if int(thresholdCal['low'])>int(thresholdCal['high']) or int(thresHough['low'])>int(thresHough['high']):
             messagebox.showinfo(title='阈值参数', message="阈值上下限设置有误")
         else:
+            processType = 'hough'
             i_p.img_processor(processType)
             settings.displayerFlag = settings.PROCESSED
 
     #传输处理结果给Modbus
-    def processorTransfer(self):
-        ret = mdbsGp.modbusListTransferrer(settings.finderProcessResult)
-        if ret == -1:
-            messagebox.showinfo(title='Modbus传输', message="尚未得到传输值")
-        elif ret==0:
-            messagebox.showinfo(title='Modbus传输', message="传输值不合法")
-        else:
-            messagebox.showinfo(title='Modbus传输', message="传输已成功")
+    def processorWrite(self):
+        i_p.writeTxt()
+        messagebox.showinfo(title='Modbus传输', message="已写入")
+
 
     #获取处理完成的信号
     def processorFetchSignal(self):
@@ -392,6 +381,7 @@ class GoldenPeek:
     #设置自动化流程的开始信号
     def autoLaunch(self):
         settings.autoSwitch = 1
+        self.portAuto = mdbsGp.portBuilder()
 
 
 

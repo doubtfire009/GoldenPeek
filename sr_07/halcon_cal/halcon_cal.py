@@ -37,6 +37,36 @@ def halconPoints():
 
     cv2.imwrite(settings.halcon_img_dir + "halcon.jpg", img)
 
+def halconHoughPoints():
+    img = cv2.imread(settings.catch_img_dir + "catched.jpg")
+
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(settings.halcon_img_dir + "halconGray.jpg", gray)
+
+
+    ret, th1 = cv2.threshold(gray, int(settings.halconThreshold), 255, cv2.THRESH_BINARY)
+
+    cv2.imwrite(settings.halcon_img_dir + "halconThreshold.jpg", th1)
+
+    # circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 100,
+    #                            param1=100, param2=30, minRadius=100, maxRadius=200)
+    # https://blog.csdn.net/tengfei461807914/article/details/77507820
+    settings.halconCircle = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 100, int(settings.halconHoughParam1), int(settings.halconHoughParam2), int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']), int(settings.thresholdInfo['halcon']['halcon']['halconHoughmaxRadius']))
+    print(settings.halconHoughParam1)
+    print(settings.halconHoughParam2)
+    print(int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']))
+    print(int(settings.thresholdInfo['halcon']['halcon']['halconHoughmaxRadius']))
+
+    for i in settings.halconCircle[0, :]:
+        # draw the outer circle
+        cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 2)
+        # draw the center of the circle
+        cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
+        cv2.putText(img, str(i), (int(i[0]), int(i[1])), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                    (0, 255, 0), 3)
+    cv2.imwrite(settings.halcon_img_dir + "halcon.jpg", img)
+
 
 def vertexFinder(xList, yList):
     xMaxIndex = max(xList)
@@ -44,11 +74,13 @@ def vertexFinder(xList, yList):
     xMinIndex = min(xList)
     yMinIndex = min(yList)
 
+    #说明四个点是分开的
     if xList.count(xMaxIndex) == 1:
         xMax_y = [xMaxIndex, yList[xList.index(xMaxIndex)]]
         xMin_y = [xMinIndex, yList[xList.index(xMinIndex)]]
         x_yMax = [xList[yList.index(yMaxIndex)], yMaxIndex]
         x_yMin = [xList[yList.index(yMinIndex)], yMinIndex]
+    # 说明四个点有重合
     else:
         xMax_y = [xMaxIndex, yMaxIndex]
         xMin_y = [xMinIndex, yMinIndex]
@@ -64,37 +96,23 @@ def vertexFinder(xList, yList):
 
 
 # Check Robot points whether they are legal
-def reviewRobotPoints():
-
-    halconReview = settings.halconReview
-
-    print("reviewRobotPoints")
-    print(halconReview)
-
+def reviewRobotPoints(halconCollection):
     flagRobotPoints = 0
-    NoP1 = 0
-    NoP2 = 0
-    for itemI in halconReview:
-        i = halconReview.index(itemI)
+    settings.halconReview[0] = settings.halconCircle[halconCollection[0][0]]
+    settings.halconReview[1] = settings.halconCircle[halconCollection[1][0]]
 
-        for itemJ in halconReview:
-            j = halconReview.index(itemJ)
-            if j>i:
-                halconReviewMatrix = np.matrix([
-                    [itemI[0],itemI[1]],
-                    [itemJ[0], itemJ[1]],
-                ]);
-                print("halconReviewMatrix.ndim")
-                print(halconReviewMatrix.ndim)
-                if halconReviewMatrix.ndim == 2:
-                    flagRobotPoints = 1
-                    NoP1 = i
-                    NoP2 = j
-                    break
-        if flagRobotPoints == 1:
-            break
+    halconReviewMatrix = np.matrix(
+        [settings.halconReview[0][0],settings.halconReview[0][1]],
+        [settings.halconReview[1][0],settings.halconReview[1][1]],
+    )
 
-    return NoP1,NoP2,flagRobotPoints
+    if halconReviewMatrix.ndim == 2:
+        flagRobotPoints = 1
+    else:
+        settings.halconReview = []
+
+
+    return flagRobotPoints
 
 
 
@@ -103,10 +121,10 @@ def halconCollectionCheck(halconCollection):
     illegalFlag = 1
 
     for halconItem in halconCollection:
-        if halconItem[0] == '' or halconItem[1] == '':
+        if halconItem[0] == '' or halconItem[1] == '' or halconItem[2] == '':
             illegalFlag = 0
         else:
-            if isnumber(halconItem[0]) and isnumber(halconItem[1]):
+            if isinstance(halconItem[0],int) and isnumber(halconItem[1]) and isnumber(halconItem[1]):
                 pass
             else:
                 illegalFlag = 0
@@ -118,20 +136,17 @@ def halconCollectionCheck(halconCollection):
 
 # halconPoints are obtained from the catched image.
 # robotPoints are from the robot arms.
-def marksHalconReverseConverter(halconP1 = (0,0),halconP2 = (0,0),robotP1 = (0,0),robotP2 = (0,0)):
-    halconPointsMatrix = np.matrix([
-        [float(halconP1[0]),float(halconP1[1])],
-        [float(halconP2[0]), float(halconP2[1])]
+def marksHalconReverseConverter(halconCollection):
+    robotPointsMatrix = np.matrix([
+        [float(halconCollection[0][1]),float(halconCollection[0][2])],
+        [float(halconCollection[1][1]),float(halconCollection[1][2])]
     ])
 
-    robotPointsMatrix = np.matrix([
-        [float(robotP1[0]), float(robotP1[1])],
-        [float(robotP2[0]), float(robotP2[1])]
+    halconPointsMatrix = np.matrix([
+        [float(settings.halconReview[0][0]), float(settings.halconReview[0][1])],
+        [float(settings.halconReview[1][0]), float(settings.halconReview[1][1])]
     ])
-    print("halconPointsMatrix")
-    print(halconPointsMatrix)
-    print("robotPointsMatrix")
-    print(robotPointsMatrix)
+
 
     MatrixHalcon = (halconPointsMatrix.I)*robotPointsMatrix
 
