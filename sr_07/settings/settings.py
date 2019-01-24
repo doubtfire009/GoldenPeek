@@ -22,12 +22,8 @@ PROCESSED = 'processed'
 displayerFlag = INIT
 
 #Halcon Points
-xMax_y = [0,0]
-xMin_y = [0,0]
-x_yMax = [0,0]
-x_yMin = [0,0]
 
-halconReview = [xMax_y,xMin_y,x_yMax,x_yMin]
+halconReview = []
 
 #Halcon constants
 halconThreshold = 0
@@ -61,7 +57,7 @@ halcon_B = [0,0]
 halcon_C = [0,0]
 halcon_D = [0,0]
 
-halconHoughParam1 = 100
+halconHoughParam1 = 50
 halconHoughParam2 = 30
 
 #threshold types

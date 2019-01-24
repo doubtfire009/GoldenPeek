@@ -152,14 +152,14 @@ class GoldenPeek:
         self.labelhalconHoughminRadius = ttk.LabelFrame(self.tabHalcon, text=' 圆半径最小值 ')
         self.labelhalconHoughminRadius.grid(row=0, column=2, padx=8, pady=4)
         # Adding HalconCal Scale Threshold
-        self.halconHoughminRadius = tkinter.Scale(self.labelhalconHoughminRadius, from_=1, to=100, orient='horizontal', showvalue=1, command=partial(self.thresholdSetter,'halcon', 'halcon','halconHoughminRadius'))
+        self.halconHoughminRadius = tkinter.Scale(self.labelhalconHoughminRadius, from_=10, to=200, orient='horizontal', showvalue=1, command=partial(self.thresholdSetter,'halcon', 'halcon','halconHoughminRadius'))
         self.halconHoughminRadius.grid(row=1, column=0)
 
         # HalconCalThreshold
         self.labelhalconHoughmaxRadius = ttk.LabelFrame(self.tabHalcon, text=' 圆半径最大值 ')
         self.labelhalconHoughmaxRadius.grid(row=0, column=3, padx=8, pady=4)
         # Adding HalconCal Scale Threshold
-        self.halconHoughmaxRadius = tkinter.Scale(self.labelhalconHoughmaxRadius, from_=1, to=100, orient='horizontal',
+        self.halconHoughmaxRadius = tkinter.Scale(self.labelhalconHoughmaxRadius, from_=10, to=200, orient='horizontal',
                                                   showvalue=1, command=partial(self.thresholdSetter, 'halcon', 'halcon','halconHoughmaxRadius'))
         self.halconHoughmaxRadius.grid(row=1, column=0)
 
@@ -305,15 +305,13 @@ class GoldenPeek:
     #把halcon定位点结合输入的对应机械臂坐标，转化成变换矩阵
     def halconConversionCal(self):
         # print("halconConversionCal")
-        halconA = [self.nameANo_entered.get(), self.nameAX_entered.get(), self.nameAY_entered.get()]
-        halconB = [self.nameBNo_entered.get(), self.nameBX_entered.get(), self.nameBY_entered.get()]
+        halconA = [int(self.nameANo_entered.get()), self.nameAX_entered.get(), self.nameAY_entered.get()]
+        halconB = [int(self.nameBNo_entered.get()), self.nameBX_entered.get(), self.nameBY_entered.get()]
 
 
         halconCollection = [halconA,halconB]
-
         if not(hal_c.halconCollectionCheck(halconCollection)):
             messagebox.showinfo(title='机械臂坐标', message="机械臂坐标不合法")
-
 
         # 检查halcon定位点坐标，是否能组成获取转换方程的矩阵
         flagRobotPoints = hal_c.reviewRobotPoints(halconCollection)

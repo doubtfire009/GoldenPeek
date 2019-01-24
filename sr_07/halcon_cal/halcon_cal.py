@@ -52,20 +52,25 @@ def halconHoughPoints():
     # circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 100,
     #                            param1=100, param2=30, minRadius=100, maxRadius=200)
     # https://blog.csdn.net/tengfei461807914/article/details/77507820
-    settings.halconCircle = cv2.HoughCircles(th1, cv2.HOUGH_GRADIENT, 1, 50, int(settings.halconHoughParam1), int(settings.halconHoughParam2), int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']), int(settings.thresholdInfo['halcon']['halcon']['halconHoughmaxRadius']))
-    print(settings.halconHoughParam1)
-    print(settings.halconHoughParam2)
-    print(int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']))
-    print(int(settings.thresholdInfo['halcon']['halcon']['halconHoughmaxRadius']))
+    settings.halconCircle = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 20, param1=int(settings.halconHoughParam1), param2 = int(settings.halconHoughParam2), minRadius = int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']), maxRadius = int(settings.thresholdInfo['halcon']['halcon']['halconHoughmaxRadius']))
+    settings.halconCircle = settings.halconCircle[0]
 
-    for i in settings.halconCircle[0, :]:
-        # draw the outer circle
-        cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 2)
-        # draw the center of the circle
-        cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
-        # cv2.putText(img, str(i), (int(i[0]), int(i[1])), cv2.FONT_HERSHEY_SIMPLEX, 2,
-        #             (0, 255, 0), 3)
+    key = 0
+    for circle in settings.halconCircle:
+        # 圆的基本信息
+        # 坐标行列
+        x = int(circle[0])
+        y = int(circle[1])
+        # 半径
+        r = int(circle[2])
+        # 在原图用指定颜色标记出圆的位置
+        img = cv2.circle(img, (x, y), 5, (0, 0, 255), -1)
+        cv2.putText(img, str(key), (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                    (0, 0, 255), 1)
+        key = key + 1
+
     cv2.imwrite(settings.halcon_img_dir + "halcon.jpg", img)
+
 
 
 def vertexFinder(xList, yList):
@@ -98,13 +103,10 @@ def vertexFinder(xList, yList):
 # Check Robot points whether they are legal
 def reviewRobotPoints(halconCollection):
     flagRobotPoints = 0
-    settings.halconReview[0] = settings.halconCircle[halconCollection[0][0]]
-    settings.halconReview[1] = settings.halconCircle[halconCollection[1][0]]
+    settings.halconReview.append(settings.halconCircle[halconCollection[0][0]].tolist())
+    settings.halconReview.append(settings.halconCircle[halconCollection[1][0]].tolist())
 
-    halconReviewMatrix = np.matrix(
-        [settings.halconReview[0][0],settings.halconReview[0][1]],
-        [settings.halconReview[1][0],settings.halconReview[1][1]],
-    )
+    halconReviewMatrix = np.array(settings.halconReview)
 
     if halconReviewMatrix.ndim == 2:
         flagRobotPoints = 1
