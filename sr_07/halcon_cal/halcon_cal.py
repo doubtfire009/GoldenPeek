@@ -52,7 +52,7 @@ def halconHoughPoints():
     # circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 100,
     #                            param1=100, param2=30, minRadius=100, maxRadius=200)
     # https://blog.csdn.net/tengfei461807914/article/details/77507820
-    settings.halconCircle = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 100, int(settings.halconHoughParam1), int(settings.halconHoughParam2), int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']), int(settings.thresholdInfo['halcon']['halcon']['halconHoughmaxRadius']))
+    settings.halconCircle = cv2.HoughCircles(th1, cv2.HOUGH_GRADIENT, 1, 50, int(settings.halconHoughParam1), int(settings.halconHoughParam2), int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']), int(settings.thresholdInfo['halcon']['halcon']['halconHoughmaxRadius']))
     print(settings.halconHoughParam1)
     print(settings.halconHoughParam2)
     print(int(settings.thresholdInfo['halcon']['halcon']['halconHoughminRadius']))
@@ -63,8 +63,8 @@ def halconHoughPoints():
         cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 2)
         # draw the center of the circle
         cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
-        cv2.putText(img, str(i), (int(i[0]), int(i[1])), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                    (0, 255, 0), 3)
+        # cv2.putText(img, str(i), (int(i[0]), int(i[1])), cv2.FONT_HERSHEY_SIMPLEX, 2,
+        #             (0, 255, 0), 3)
     cv2.imwrite(settings.halcon_img_dir + "halcon.jpg", img)
 
 
