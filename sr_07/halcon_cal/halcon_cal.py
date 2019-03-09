@@ -72,6 +72,35 @@ def halconHoughPoints():
     cv2.imwrite(settings.halcon_img_dir + "halcon.jpg", img)
 
 
+def halconEllipsePoints():
+    img = cv2.imread(settings.catch_img_dir + "catched.jpg")
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(settings.halcon_img_dir + "halconGray.jpg", gray)
+
+    ret, th1 = cv2.threshold(gray, int(settings.halconThreshold), 255, cv2.THRESH_BINARY)
+
+    cv2.imwrite(settings.halcon_img_dir + "halconThreshold.jpg", th1)
+
+    image, contours, hierarchy = cv2.findContours(th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    imgContour = cv2.drawContours(img, contours, -1, (255, 255, 255), -1)
+
+    iCgray = cv2.cvtColor(imgContour, cv2.COLOR_BGR2GRAY)
+
+    iCret, iCth1 = cv2.threshold(iCgray, int(settings.halconThreshold), 255, cv2.THRESH_BINARY)
+
+    iCimage, iCcontours, iChierarchy = cv2.findContours(iCth1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    settings.halconCircle = []
+    for iCcontour in iCcontours:
+        if (iCcontour.shape)[0] >= 5:
+            ellipse = cv2.fitEllipse(iCcontour)
+            settings.halconCircle.append([ellipse[0][0], ellipse[0][1]])
+            cv2.ellipse(img, ellipse, (255, 0, 255), 1, cv2.LINE_AA)
+
+    cv2.imwrite(settings.halcon_img_dir + "halcon.jpg", img)
+
 
 def vertexFinder(xList, yList):
     xMaxIndex = max(xList)
@@ -102,17 +131,13 @@ def vertexFinder(xList, yList):
 
 # Check Robot points whether they are legal
 def reviewRobotPoints(halconCollection):
-    flagRobotPoints = 0
-    settings.halconReview.append(settings.halconCircle[halconCollection[0][0]].tolist())
-    settings.halconReview.append(settings.halconCircle[halconCollection[1][0]].tolist())
 
-    halconReviewMatrix = np.array(settings.halconReview)
-
-    if halconReviewMatrix.ndim == 2:
-        flagRobotPoints = 1
+    if (halconCollection[0][0] == halconCollection[1][0]
+            or halconCollection[0][1] == halconCollection[1][1]
+            or halconCollection[0][2] == halconCollection[1][2]):
+        flagRobotPoints = 0
     else:
-        settings.halconReview = []
-
+        flagRobotPoints = 1
 
     return flagRobotPoints
 
@@ -139,18 +164,26 @@ def halconCollectionCheck(halconCollection):
 # halconPoints are obtained from the catched image.
 # robotPoints are from the robot arms.
 def marksHalconReverseConverter(halconCollection):
-    robotPointsMatrix = np.matrix([
-        [float(halconCollection[0][1]),float(halconCollection[0][2])],
-        [float(halconCollection[1][1]),float(halconCollection[1][2])]
+
+    halconAssembleX = np.array([
+        [settings.halconCircle[halconCollection[0][0]][0], settings.halconCircle[halconCollection[1][0]][0]],
+        [1, 1]
+    ])
+    halconAssembleY = np.array([
+        [settings.halconCircle[halconCollection[0][0]][1], settings.halconCircle[halconCollection[1][0]][1]],
+        [1, 1]
+    ])
+    robotAssembleX = np.array([
+        [halconCollection[0][1], halconCollection[1][1]]
+    ])
+    robotAssembleY = np.array([
+        [halconCollection[0][2], halconCollection[1][2]]
     ])
 
-    halconPointsMatrix = np.matrix([
-        [float(settings.halconReview[0][0]), float(settings.halconReview[0][1])],
-        [float(settings.halconReview[1][0]), float(settings.halconReview[1][1])]
-    ])
+    halconConverterX = robotAssembleX * (halconAssembleX.I)
+    halconConverterY = robotAssembleY * (halconAssembleY.I)
 
+    settings.halconConverterX = halconConverterX.tolist()
+    settings.halconConverterY = halconConverterY.tolist()
 
-    MatrixHalcon = (halconPointsMatrix.I)*robotPointsMatrix
-
-    settings.halconConverterMatrix = MatrixHalcon
 

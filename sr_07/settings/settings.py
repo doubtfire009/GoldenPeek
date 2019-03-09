@@ -32,10 +32,10 @@ halSinTheta = 0
 halA = 0
 halB = 0
 
-halconConverterMatrix = np.matrix([
-    [2,1],
-    [0,3]
-])
+halconConverterMatrix = [[0,0],[0,0]]
+
+halconConverterX = [0,0]
+halconConverterY = [0,0]
 
 #Processor Flags
 processCatcherFlag = 0

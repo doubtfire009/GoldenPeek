@@ -148,24 +148,10 @@ class GoldenPeek:
         self.halconCalButton = ttk.Button(self.labelHalconCalButton, text="获取矩阵", command=self.halconConversionCal)
         self.halconCalButton.grid(row=1, column=0)
 
-        # HalconCalThreshold
-        self.labelhalconHoughminRadius = ttk.LabelFrame(self.tabHalcon, text=' 圆半径最小值 ')
-        self.labelhalconHoughminRadius.grid(row=0, column=2, padx=8, pady=4)
-        # Adding HalconCal Scale Threshold
-        self.halconHoughminRadius = tkinter.Scale(self.labelhalconHoughminRadius, from_=10, to=200, orient='horizontal', showvalue=1, command=partial(self.thresholdSetter,'halcon', 'halcon','halconHoughminRadius'))
-        self.halconHoughminRadius.grid(row=1, column=0)
-
-        # HalconCalThreshold
-        self.labelhalconHoughmaxRadius = ttk.LabelFrame(self.tabHalcon, text=' 圆半径最大值 ')
-        self.labelhalconHoughmaxRadius.grid(row=0, column=3, padx=8, pady=4)
-        # Adding HalconCal Scale Threshold
-        self.halconHoughmaxRadius = tkinter.Scale(self.labelhalconHoughmaxRadius, from_=10, to=200, orient='horizontal',
-                                                  showvalue=1, command=partial(self.thresholdSetter, 'halcon', 'halcon','halconHoughmaxRadius'))
-        self.halconHoughmaxRadius.grid(row=1, column=0)
 
         # HalconCalThreshold
         self.labelHalconCalThreshold = ttk.LabelFrame(self.tabHalcon, text=' 阈值设定 ')
-        self.labelHalconCalThreshold.grid(row=0, column=4, padx=8, pady=4)
+        self.labelHalconCalThreshold.grid(row=0, column=2, padx=8, pady=4)
         # Adding HalconCal Scale Threshold
         self.halconCalThreshold = tkinter.Scale(self.labelHalconCalThreshold, from_=1, to=255, orient='horizontal',
                                                 showvalue=1, command=self.halconThresholdSetter)
@@ -224,22 +210,7 @@ class GoldenPeek:
                                                    showvalue=1, command=partial(self.thresholdSetter,'finder', 'cal','high'))
         self.finderCalThresholdHigh.grid(row=1, column=0)
 
-        # Finder Threshold
-        self.labelfinderHoughminRadius = ttk.LabelFrame(self.tabFinder, text=' 圆半径最小值 ')
-        self.labelfinderHoughminRadius.grid(row=1, column=2)
-        # Adding HalconCal Scale Threshold
-        self.finderHoughminRadius = tkinter.Scale(self.labelfinderHoughminRadius, from_=1, to=100, orient='horizontal',
-                                                   showvalue=1, command=partial(self.thresholdSetter,'finder', 'hough', 'finderHoughminRadius'))
-        self.finderHoughminRadius.grid(row=1, column=0)
 
-        # Finder Threshold
-        self.labelfinderHoughmaxRadius = ttk.LabelFrame(self.tabFinder, text=' 圆半径最小值 ')
-        self.labelfinderHoughmaxRadius.grid(row=1, column=3)
-        # Adding HalconCal Scale Threshold
-        self.finderHoughmaxRadius = tkinter.Scale(self.labelfinderHoughmaxRadius, from_=1, to=100, orient='horizontal',
-                                                    showvalue=1,
-                                                    command=partial(self.thresholdSetter,'finder', 'hough', 'finderHoughmaxRadius'))
-        self.finderHoughmaxRadius.grid(row=1, column=0)
 
 
 
@@ -318,8 +289,10 @@ class GoldenPeek:
 
         if flagRobotPoints==1:
             hal_c.marksHalconReverseConverter(halconCollection)
-            print("halconConverterMatrix")
-            print(settings.halconConverterMatrix)
+            print("settings.halconConverterX")
+            print(settings.halconConverterX)
+            print("settings.halconConverterY")
+            print(settings.halconConverterY)
         else:
             print("请调整定位板角度或使用其他坐标点")
             messagebox.showinfo(title='定位板', message="请调整定位板角度再试一次")
@@ -347,7 +320,7 @@ class GoldenPeek:
         if int(thresholdCal['low'])>int(thresholdCal['high']) or int(thresHough['halconHoughminRadius'])>int(thresHough['halconHoughmaxRadius']):
             messagebox.showinfo(title='阈值参数', message="阈值上下限设置有误")
         else:
-            processType = 'hough'
+            processType = 'ellipse'
             i_p.img_processor(processType)
             settings.displayerFlag = settings.PROCESSED
 
@@ -538,4 +511,4 @@ class MyVideoCapture:
 
 
 # Create a window and pass it to the Application object
-GoldenPeek(tkinter.Tk(), "  李之玉出品 V2.3-20190108 ")
+GoldenPeek(tkinter.Tk(), "  李之玉出品 V3.1-20190309 ")
