@@ -2,10 +2,19 @@ import cv2
 import numpy as np
 import settings.settings as settings
 
-def isnumber(aString):
+def isNumber(aString):
     try:
         float(aString)
         return True
+    except:
+        return False
+
+def isInt(aString):
+    try:
+        if int(aString)>0 :
+            return True
+        else:
+            return False
     except:
         return False
 
@@ -93,11 +102,20 @@ def halconEllipsePoints():
     iCimage, iCcontours, iChierarchy = cv2.findContours(iCth1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     settings.halconCircle = []
+
+    #写出每个圆心的标号
+    key = 0
     for iCcontour in iCcontours:
         if (iCcontour.shape)[0] >= 5:
             ellipse = cv2.fitEllipse(iCcontour)
             settings.halconCircle.append([ellipse[0][0], ellipse[0][1]])
             cv2.ellipse(img, ellipse, (255, 0, 255), 1, cv2.LINE_AA)
+            cv2.putText(img, str(key), (int(ellipse[0][0]), int(ellipse[0][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 0, 255), 1)
+            # 在原图用指定颜色标记出圆的位置
+            img = cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 5, (0, 0, 255), -1)
+            key = key + 1
+
 
     cv2.imwrite(settings.halcon_img_dir + "halcon.jpg", img)
 
@@ -145,17 +163,15 @@ def reviewRobotPoints(halconCollection):
 
 
 def halconCollectionCheck(halconCollection):
-    illegalFlag = 1
 
     for halconItem in halconCollection:
         if halconItem[0] == '' or halconItem[1] == '' or halconItem[2] == '':
             illegalFlag = 0
         else:
-            if isinstance(halconItem[0],int) and isnumber(halconItem[1]) and isnumber(halconItem[1]):
-                pass
+            if isInt(halconItem[0]) and isNumber(halconItem[1]) and isNumber(halconItem[1]):
+                illegalFlag = 1
             else:
                 illegalFlag = 0
-
     return illegalFlag
 
 
@@ -166,22 +182,22 @@ def halconCollectionCheck(halconCollection):
 def marksHalconReverseConverter(halconCollection):
 
     halconAssembleX = np.array([
-        [settings.halconCircle[halconCollection[0][0]][0], settings.halconCircle[halconCollection[1][0]][0]],
+        [settings.halconCircle[int(halconCollection[0][0])][0], settings.halconCircle[int(halconCollection[1][0])][0]],
         [1, 1]
     ])
     halconAssembleY = np.array([
-        [settings.halconCircle[halconCollection[0][0]][1], settings.halconCircle[halconCollection[1][0]][1]],
+        [settings.halconCircle[int(halconCollection[0][0])][1], settings.halconCircle[int(halconCollection[1][0])][1]],
         [1, 1]
     ])
     robotAssembleX = np.array([
-        [halconCollection[0][1], halconCollection[1][1]]
+        [float(halconCollection[0][1]), float(halconCollection[1][1])]
     ])
     robotAssembleY = np.array([
-        [halconCollection[0][2], halconCollection[1][2]]
+        [float(halconCollection[0][2]), float(halconCollection[1][2])]
     ])
 
-    halconConverterX = robotAssembleX * (halconAssembleX.I)
-    halconConverterY = robotAssembleY * (halconAssembleY.I)
+    halconConverterX = np.dot(robotAssembleX, (np.linalg.inv(halconAssembleX)))
+    halconConverterY = np.dot(robotAssembleY, (np.linalg.inv(halconAssembleY)))
 
     settings.halconConverterX = halconConverterX.tolist()
     settings.halconConverterY = halconConverterY.tolist()

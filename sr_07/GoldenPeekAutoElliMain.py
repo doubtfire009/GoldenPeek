@@ -269,15 +269,14 @@ class GoldenPeek:
 
     # 获取halcon的定位点
     def halconPoints(self):
-        hal_c.halconHoughPoints()
-        # hal_c.halconPoints()
+        hal_c.halconEllipsePoints()
         settings.displayerFlag = settings.HALCON
 
     #把halcon定位点结合输入的对应机械臂坐标，转化成变换矩阵
     def halconConversionCal(self):
         # print("halconConversionCal")
-        halconA = [int(self.nameANo_entered.get()), self.nameAX_entered.get(), self.nameAY_entered.get()]
-        halconB = [int(self.nameBNo_entered.get()), self.nameBX_entered.get(), self.nameBY_entered.get()]
+        halconA = [self.nameANo_entered.get(), self.nameAX_entered.get(), self.nameAY_entered.get()]
+        halconB = [self.nameBNo_entered.get(), self.nameBX_entered.get(), self.nameBY_entered.get()]
 
 
         halconCollection = [halconA,halconB]
