@@ -6,6 +6,7 @@ import time
 import PIL.Image, PIL.ImageTk
 from functools import partial
 import time
+import datetime
 
 import settings.settings as settings
 import image_catcher.img_catcher as i_c
@@ -508,6 +509,12 @@ class MyVideoCapture:
         if self.vid.isOpened():
             self.vid.release()
 
+dateCutter = datetime.datetime(2019, 3, 11)
 
-# Create a window and pass it to the Application object
-GoldenPeek(tkinter.Tk(), "  李之玉出品 V3.1-20190309 ")
+nowTime = datetime.datetime.now()
+
+if nowTime < dateCutter:
+    # Create a window and pass it to the Application object
+    GoldenPeek(tkinter.Tk(), "  李之玉出品 V3.1-20190309 ")
+else:
+    print("已过期")
